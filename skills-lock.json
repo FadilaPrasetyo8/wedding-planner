@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "laravel-best-practices": {
+      "source": "laravel/boost",
+      "sourceType": "github",
+      "skillPath": ".ai/laravel/skill/laravel-best-practices/SKILL.md",
+      "computedHash": "a0ca23cccdb3dd077105aef1b06c5d10b1264b0167f7c16d821c1017b46bb712"
+    }
+  }
+}
