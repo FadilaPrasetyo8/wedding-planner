@@ -2,12 +2,12 @@
 
 ## Current State
 
-- **Phase:** M0 — Foundation complete
-- **Implementation:** M0 Tasks 1–7 complete; all M0 exit gates pass
-- **Current milestone:** M0 — Foundation
-- **Last verified update:** 4 September 2026
+- **Phase:** M1 — Workspace and Membership complete
+- **Implementation:** M0 Tasks 1–7 and all eight M1 vertical slices complete; all M1 exit gates pass
+- **Current milestone:** M1 — Workspace and Membership
+- **Last verified update:** 7 September 2026
 
-The product owner approved the planning baseline and M0 execution design. M0 technical decisions are recorded in D-013 through D-015. The Laravel 13, Inertia 3, React 19, Tailwind CSS 4, PostgreSQL, authentication, profile-security, application-shell, and UI-testing foundations are implemented and verified. No deployment, Supabase configuration, production infrastructure, or M1+ work has begun.
+The product owner approved the planning baseline plus the M0 and M1 execution designs. M0 technical decisions are recorded in D-013 through D-015; M1 retention, invitation, and event-only template decisions are recorded in D-016 through D-018. The application now provides secure multi-wedding workspaces, role-aware membership, invitations, ownership transfer, wedding switching, onboarding, and atomic event-template cloning on the verified Laravel and React foundation. No deployment, Supabase configuration, production infrastructure, or M2+ operational functionality has begun.
 
 ## Planning Deliverables
 
@@ -102,10 +102,62 @@ The product owner approved the planning baseline and M0 execution design. M0 tec
 - **Secret-exposure checks:** No database, PostgreSQL URL, Supabase key, or service-role identifier was found in React/application resources or the final browser bundle, and `.env.example` contains no sensitive `VITE_*` variable names. Inertia shared-prop tests also reject server credential namespaces.
 - **Scope check:** No wedding-domain tables, workspace flows, M1 features, deployment, commit, Supabase configuration, or production infrastructure changes were made.
 
+## Verified M1 Work
+
+### Workspace schema and integrity
+
+- **Status:** Complete
+- **Verification:** PostgreSQL migrations create weddings, retained memberships, invitations, application templates, typed template sections/items, initial wedding events, and activity logs with foreign keys, checks, indexes, UUIDs, and rollback behavior.
+- **Integrity controls:** `(wedding_id, user_id)` is unique, inactive memberships retain `left_at`, and a PostgreSQL partial unique index permits at most one active owner per wedding.
+
+### Onboarding and template cloning
+
+- **Status:** Complete
+- **Verification:** An authenticated user can create multiple wedding workspaces. Each creation atomically creates the wedding, one owner membership, a primary event, supported event-only template clones, and an activity log. Clone failure rolls back every record, and cloned events remain independent between weddings and from the application template.
+- **Scope check:** Template payloads are validated and only `event` items are supported. No M2–M5 operational records are created.
+
+### Active wedding context and isolation
+
+- **Status:** Complete
+- **Verification:** Canonical `/weddings/{wedding:uuid}/...` routes require active membership. The session stores only the last accessible wedding UUID for dashboard redirects. Non-members and inactive members receive `403`; soft-deleted weddings receive `404`; shared wedding props contain only the signed-in user's active memberships.
+- **Authorization:** Policies and backend middleware enforce owner, editor, and viewer capabilities independently of the UI. Nested member and invitation routes use scoped bindings where applicable.
+
+### Secure invitations and retained membership reactivation
+
+- **Status:** Complete
+- **Verification:** A verified owner can invite any normalized valid email as editor or viewer. Random plaintext tokens are sent once while only SHA-256 hashes are stored; invitations expire after seven days and terminal tokens are single-use. Acceptance and decline require an authenticated, verified account whose normalized email matches the invitation.
+- **Security controls:** Invalid tokens return `404`, expired or consumed tokens return `410`, wrong recipients receive `403`, and invitation creation, cancellation, acceptance, and decline are the only M1 routes gated by email verification. Acceptance reactivates the retained membership row rather than creating a duplicate.
+
+### Membership, ownership, and settings
+
+- **Status:** Complete
+- **Verification:** Owners can manage editor/viewer roles and remove active non-owner members; non-owners may leave. An owner cannot leave or be removed before transfer. Ownership transfer locks and updates memberships transactionally, demoting the former owner to editor and preserving exactly one active owner.
+- **Settings:** Only owners can update wedding settings or soft-delete a wedding. Deletion requires exact wedding-name confirmation and clears a matching redirect preference.
+
+### Wedding-specific interface
+
+- **Status:** Complete
+- **Verification:** The responsive Inertia shell uses Indonesian copy and the temporary `Wedding Planner` identity. It exposes wedding switching, onboarding, overview, member/invitation management, owner settings, explicit `Pemilik`/`Editor`/`Hanya lihat` states, and capability-aware navigation without treating UI visibility as authorization.
+- **Visual direction:** The interface uses the approved warm, calm, premium wedding-planning direction rather than a generic administration dashboard.
+
+### M1 exit gate
+
+- **Status:** Complete
+- **Database:** `php artisan migrate:fresh --seed --force` completed against the dedicated PostgreSQL test database, including `TemplateSeeder`.
+- **Backend quality:** `composer test` passed Pint, PHPStan with zero errors, and PHPUnit with 84 tests and 405 assertions. The focused M1 workspace suite passed 29 tests with 171 assertions.
+- **Frontend quality:** `npm test` passed 1 Vitest test. `npm run check` reported 72 files correctly formatted and no warnings or lint errors across 155 files. `npm run types:check` passed. `npm run build` completed with 2,289 modules transformed.
+- **Route review:** Wedding routes use canonical UUID binding plus `auth` and `wedding.member`; invitation-sensitive routes additionally use `verified`; cross-wedding member and invitation resources use scoped bindings.
+- **Secret review:** No Supabase service role, database password, secret key, invitation token hash, or storage path identifier was found in React sources.
+- **Scope review:** Backend and wedding UI scans found no M2 task/timeline, finance-payment, logistics, event-day, file, or custom-field implementation. The existing optional target-budget wedding setting is the only finance-related M1 field and does not implement M3 behavior.
+
 ## Next Authorized Work
 
-M0 is complete. The exact next recommended milestone is **M1 — Workspace and membership**, beginning with its approved requirements and first vertical slice only after explicit authorization.
+M1 is complete. The exact next recommended milestone is **M2 — Dashboard and Planning**, but D-012 (the template timeline anchor) must be approved before M2 implementation begins.
 
 ## M0 Exit Gate
 
 **Passed on 4 September 2026.** Public registration works, ordinary protected routes require Laravel session authentication without globally requiring verified email, and verification remains implemented for future sensitive endpoints such as wedding invitations and private uploads. Changed email resets verification and triggers a new verification notification without blocking the dashboard/account shell. No database or Supabase secret reaches React or the production browser bundle, and migration, backend test, frontend test, lint, typecheck, and production build commands are documented and passing.
+
+## M1 Exit Gate
+
+**Passed on 7 September 2026.** Users can create or join multiple isolated wedding workspaces; each active wedding has exactly one active owner; ownership transfer, member lifecycle, verified sensitive invitation actions, active-wedding redirects, onboarding, event-only template cloning, and soft deletion are implemented and covered by passing tests. Complete backend and frontend quality gates pass, and route, authorization, isolation, secret-exposure, and M2+ scope reviews found no unresolved M1 defect.

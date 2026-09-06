@@ -41,7 +41,7 @@ class ProfileSecurityTest extends TestCase
 
         $this->actingAs($user)
             ->get(route('dashboard'))
-            ->assertOk();
+            ->assertRedirect(route('weddings.create'));
     }
 
     public function test_unchanged_email_does_not_send_verification_notification(): void

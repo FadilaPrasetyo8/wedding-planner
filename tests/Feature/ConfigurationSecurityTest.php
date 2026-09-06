@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Enums\WeddingMemberRole;
 use App\Models\User;
+use App\Models\Wedding;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -14,9 +16,15 @@ class ConfigurationSecurityTest extends TestCase
     public function test_shared_inertia_props_do_not_expose_server_credentials(): void
     {
         $user = User::factory()->create();
+        $wedding = Wedding::factory()->create();
+        $wedding->memberships()->create([
+            'user_id' => $user->id,
+            'role' => WeddingMemberRole::Owner,
+            'joined_at' => now(),
+        ]);
 
         $this->actingAs($user)
-            ->get(route('dashboard'))
+            ->get(route('weddings.show', $wedding))
             ->assertInertia(fn (Assert $page) => $page
                 ->has('name')
                 ->has('auth.user')

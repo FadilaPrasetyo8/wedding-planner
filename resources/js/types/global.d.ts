@@ -1,4 +1,10 @@
 import type { Auth } from '@/types/auth';
+import type {
+    ActiveWedding,
+    WeddingCapabilities,
+    WeddingRole,
+    WeddingSummary,
+} from '@/types/wedding';
 
 declare module 'react' {
     interface InputHTMLAttributes<T> {
@@ -11,6 +17,10 @@ declare module '@inertiajs/core' {
         sharedPageProps: {
             name: string;
             auth: Auth;
+            weddings: WeddingSummary[];
+            activeWedding: ActiveWedding | null;
+            activeMembership: { role: WeddingRole } | null;
+            capabilities: WeddingCapabilities | null;
             sidebarOpen: boolean;
             [key: string]: unknown;
         };

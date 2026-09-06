@@ -47,7 +47,7 @@ class AuthenticationHardeningTest extends TestCase
         ])->assertRedirect(route('dashboard', absolute: false));
 
         $this->assertAuthenticatedAs($user);
-        $this->get(route('dashboard'))->assertOk();
+        $this->get(route('dashboard'))->assertRedirect(route('weddings.create'));
     }
 
     public function test_registration_rejects_a_duplicate_email(): void

@@ -92,3 +92,21 @@ This log records product and architecture decisions that implementation must not
 - **Decision:** The supported deployment direction is a container-compatible Linux VPS running the single Laravel and Inertia application with PostgreSQL and HTTPS dependencies supplied per environment.
 - **Consequence:** M0 records compatible environment assumptions only. Deployment automation, production infrastructure changes, Supabase configuration, and operational release procedures remain deferred to their approved milestones.
 
+## D-016 — M1 Wedding and Membership Retention
+
+- **Status:** Accepted
+- **Decision:** Weddings use soft deletion. Membership rows are retained with a nullable `left_at`; leaving or removal deactivates the existing row, and rejoining safely reactivates that row instead of inserting a duplicate `(wedding_id, user_id)` pair.
+- **Consequence:** Each active wedding maintains exactly one active owner. Ownership must be transferred before the owner can leave or be removed, and historical membership identity is preserved without adding a separate history table.
+
+## D-017 — M1 Open-Email Invitations
+
+- **Status:** Accepted
+- **Decision:** A verified owner may invite an editor or viewer by email even when no account currently uses that address. The recipient must register or log in, verify the matching normalized email, and then accept or decline using a random, hashed, expiring, single-use token.
+- **Consequence:** Email verification does not block ordinary authenticated or wedding access. It is enforced only on invitation creation, cancellation, acceptance, and decline in M1; invitation tokens never grant ownership.
+
+## D-018 — M1 Typed Event-Only Template Cloning
+
+- **Status:** Accepted
+- **Decision:** M1 uses application-owned templates, sections, and typed template items, but validates and clones only supported initial wedding events. It does not create or store unvalidated M2–M5 operational data.
+- **Consequence:** Wedding creation, owner membership, initial event creation, and supported template cloning are atomic and independent. The timeline-anchor decision in D-012 remains pending for M2.
+
