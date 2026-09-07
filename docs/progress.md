@@ -2,12 +2,12 @@
 
 ## Current State
 
-- **Phase:** M1 — Workspace and Membership complete
-- **Implementation:** M0 Tasks 1–7 and all eight M1 vertical slices complete; all M1 exit gates pass
-- **Current milestone:** M1 — Workspace and Membership
+- **Phase:** M2 — Dashboard and Planning complete
+- **Implementation:** M0 Tasks 1–7, all eight M1 vertical slices, and all seven M2 vertical slices complete; all M2 exit gates pass
+- **Current milestone:** M2 — Dashboard and Planning
 - **Last verified update:** 7 September 2026
 
-The product owner approved the planning baseline plus the M0 and M1 execution designs. M0 technical decisions are recorded in D-013 through D-015; M1 retention, invitation, and event-only template decisions are recorded in D-016 through D-018. The application now provides secure multi-wedding workspaces, role-aware membership, invitations, ownership transfer, wedding switching, onboarding, and atomic event-template cloning on the verified Laravel and React foundation. No deployment, Supabase configuration, production infrastructure, or M2+ operational functionality has begun.
+The product owner approved the planning baseline plus the M0, M1, and M2 execution designs. M0 technical decisions are recorded in D-013 through D-015; M1 retention, invitation, and event-only template decisions are recorded in D-016 through D-018; the M2 template timeline anchor is accepted in D-012. The application now adds wedding-scoped event and task planning, configurable task references, a filterable planning list, a bounded timeline, and a server-authoritative wedding dashboard to the verified multi-wedding foundation. No deployment, Supabase configuration, production infrastructure, or M3+ operational functionality has begun.
 
 ## Planning Deliverables
 
@@ -18,7 +18,7 @@ The product owner approved the planning baseline plus the M0 and M1 execution de
 | `docs/architecture.md` | Review-ready | Architecture sections completed and cross-checked |
 | `docs/database-erd.md` | Review-ready | Entity responsibilities, isolation, integrity, and deferred scope |
 | `docs/implementation-plan.md` | Review-ready | Sequential M0–M7 goals, gates, and test categories |
-| `docs/decision-log.md` | Complete | Accepted decisions and one milestone-gated pending decision |
+| `docs/decision-log.md` | Complete | Accepted product and architecture decisions through M2 |
 | `docs/progress.md` | Complete | Current status and handoff instructions |
 
 ## Completed Decisions
@@ -46,9 +46,8 @@ The product owner approved the planning baseline plus the M0 and M1 execution de
 
 ## Remaining Decisions
 
-- **Before M2:** template timeline anchor event, recorded as D-012.
-- **Before brand work:** final product name and visual identity. This does not block M0 backend and authentication foundations.
-- **When operationally required:** email and observability providers. These do not block the approved local M0 implementation.
+- **Before brand work:** final product name and visual identity. This does not block the verified application milestones.
+- **When operationally required:** email and observability providers. These do not block the approved local implementation.
 
 ## Verified M0 Work
 
@@ -150,9 +149,51 @@ The product owner approved the planning baseline plus the M0 and M1 execution de
 - **Secret review:** No Supabase service role, database password, secret key, invitation token hash, or storage path identifier was found in React sources.
 - **Scope review:** Backend and wedding UI scans found no M2 task/timeline, finance-payment, logistics, event-day, file, or custom-field implementation. The existing optional target-budget wedding setting is the only finance-related M1 field and does not implement M3 behavior.
 
+## Verified M2 Work
+
+### Planning schema, defaults, and templates
+
+- **Status:** Complete
+- **Verification:** PostgreSQL now stores wedding-scoped task categories, immutable-behavior task statuses, and tasks with direct `wedding_id`, UUID route keys, controlled enum values, indexes, rollback behavior, and composite foreign keys that reject cross-wedding category, status, assignee membership, and event relationships.
+- **Defaults and templates:** Existing and newly created weddings receive independent Indonesian category and status defaults. Validated `task` template items clone atomically after events, retain relative offsets, and use the D-012 primary-event anchor with a wedding-date fallback.
+
+### Wedding events and relative dates
+
+- **Status:** Complete
+- **Verification:** Active members can read wedding-scoped event lists and details; owners and editors can create, update, and delete events with validated type, date, optional time, venue, notes, and primary state. Database and action safeguards maintain one primary event per active wedding.
+- **Date integrity:** Primary-event changes use transactions and row locks, require explicit confirmation when relative tasks exist, and recalculate only `template_relative` task dates from stored offsets. Manual task dates remain unchanged.
+
+### Task configuration and lifecycle
+
+- **Status:** Complete
+- **Verification:** Owners and editors can manage wedding-scoped categories and statuses; viewers receive an explicit read-only interface. Labels, colors, order, and active state are editable, while status behavior remains immutable and uniquely controlled per wedding.
+- **Task lifecycle:** Task CRUD validates category, status, active assignee membership, and optional event against the route wedding. Manual and template-relative date modes are persisted consistently, and completed status behavior controls `completed_at` on the server.
+
+### Planning list and timeline
+
+- **Status:** Complete
+- **Verification:** The planning list provides server-side search, status, category, priority, assignee, event, overdue, and date-range filters, plus allowlisted deterministic sorting and pagination with URL query state. Desktop uses a dense table and mobile uses compact rows.
+- **Timeline:** The bounded dependency-free timeline reuses the validated planning query and date semantics, preserves active filters between views, renders task ranges and event markers with textual status and overdue meaning, and keeps ordinary edit forms as the accessible non-drag mutation path.
+
+### Wedding dashboard
+
+- **Status:** Complete
+- **Verification:** The canonical wedding overview now provides a wedding-timezone primary-event countdown, task totals and completion percentage, overdue and upcoming lists, upcoming events, and status/category grouping from wedding-scoped server queries.
+- **Aggregate rules:** Cancelled tasks are excluded from the completion denominator and overdue count. Dashboard lists are bounded and contain no finance, savings, vendor, guest, logistics, file, or event-day metrics.
+
+### M2 exit gate
+
+- **Status:** Complete
+- **Database:** `php artisan migrate:fresh --seed --force` completed successfully, including `TemplateSeeder`.
+- **Backend quality:** `composer test` passed Pint, PHPStan with zero errors, and PHPUnit with 118 tests and 791 assertions.
+- **Frontend quality:** `npm test` passed 2 Vitest test files with 2 tests. `npm run check` reported 86 files correctly formatted and no warnings or lint errors across 169 files. `npm run types:check` passed. `npm run build` completed with 2,309 modules transformed; only the existing optional `fontaine` warning was emitted.
+- **Route and authorization review:** All 35 wedding routes use the expected authenticated application boundary; M2 routes additionally use `wedding.member`, invitation mutations retain `verified`, and nested event, task, category, and status routes enforce scoped bindings. Policies preserve owner/editor mutations and viewer read-only access.
+- **Isolation and query review:** Three-wedding tests cover dashboard and planning isolation. Operational queries originate from authorized wedding relationships, use eager loading or aggregate queries, and no global `Task`, `TaskCategory`, `TaskStatus`, or `WeddingEvent` lookup pattern was found.
+- **Secret and scope review:** No database or Supabase secret marker was found in React sources. M2 application scans found no finance, savings, vendor, guest, logistics, file, custom-field, or event-day implementation. `git diff --check` passed.
+
 ## Next Authorized Work
 
-M1 is complete. The exact next recommended milestone is **M2 — Dashboard and Planning**, but D-012 (the template timeline anchor) must be approved before M2 implementation begins.
+M2 is complete. The exact next recommended milestone is **M3 — Finance**, but it has not begun and requires explicit product-owner authorization before implementation.
 
 ## M0 Exit Gate
 
@@ -161,3 +202,7 @@ M1 is complete. The exact next recommended milestone is **M2 — Dashboard and P
 ## M1 Exit Gate
 
 **Passed on 7 September 2026.** Users can create or join multiple isolated wedding workspaces; each active wedding has exactly one active owner; ownership transfer, member lifecycle, verified sensitive invitation actions, active-wedding redirects, onboarding, event-only template cloning, and soft deletion are implemented and covered by passing tests. Complete backend and frontend quality gates pass, and route, authorization, isolation, secret-exposure, and M2+ scope reviews found no unresolved M1 defect.
+
+## M2 Exit Gate
+
+**Passed on 7 September 2026.** Wedding-scoped events, configurable task references, task lifecycle, planning list, timeline, and dashboard are implemented with canonical UUID routes, active-membership middleware, scoped nested bindings, Policies, Form Requests, direct tenant keys, and composite relationship constraints. The accepted D-012 primary-event anchor moves only template-relative task dates after explicit confirmation. Fresh database, backend, frontend, formatting, static-analysis, type-check, build, route, isolation, query, secret-exposure, and M3+ exclusion checks passed. M3 has not begun.

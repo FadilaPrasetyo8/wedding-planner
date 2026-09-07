@@ -26,7 +26,7 @@ class WeddingController extends Controller
                     foreach ($section->items as $item) {
                         $items[] = [
                             'type' => $item->type,
-                            'name' => $item->payload['name'],
+                            'name' => $item->payload['name'] ?? $item->payload['title'],
                         ];
                     }
                 }

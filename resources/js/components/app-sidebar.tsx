@@ -1,5 +1,12 @@
 import { Link, usePage } from '@inertiajs/react';
-import { HeartHandshake, Home, Settings, Users } from 'lucide-react';
+import {
+    CalendarDays,
+    ClipboardList,
+    HeartHandshake,
+    Home,
+    Settings,
+    Users,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -15,7 +22,9 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { show } from '@/routes/weddings';
+import { index as eventsIndex } from '@/routes/weddings/events';
 import { index as membersIndex } from '@/routes/weddings/members';
+import { index as planningIndex } from '@/routes/weddings/planning';
 import { edit as settingsEdit } from '@/routes/weddings/settings';
 import type { ActiveWedding, NavItem, WeddingCapabilities } from '@/types';
 
@@ -30,6 +39,16 @@ export function AppSidebar() {
                   title: 'Ringkasan',
                   href: show(activeWedding.uuid),
                   icon: Home,
+              },
+              {
+                  title: 'Rencana tugas',
+                  href: planningIndex(activeWedding.uuid),
+                  icon: ClipboardList,
+              },
+              {
+                  title: 'Acara',
+                  href: eventsIndex(activeWedding.uuid),
+                  icon: CalendarDays,
               },
               {
                   title: 'Anggota',

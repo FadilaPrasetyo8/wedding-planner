@@ -13,6 +13,22 @@ class WeddingEventFactory extends Factory
 
     public function definition(): array
     {
-        return ['wedding_id' => Wedding::factory(), 'name' => fake()->randomElement(['Akad', 'Resepsi', 'Lamaran']), 'event_date' => fake()->dateTimeBetween('+1 month', '+1 year'), 'is_primary' => false, 'sort_order' => 0];
+        return [
+            'wedding_id' => Wedding::factory(),
+            'name' => fake()->randomElement(['Akad', 'Resepsi', 'Lamaran']),
+            'type' => 'custom',
+            'event_date' => fake()->dateTimeBetween('+1 month', '+1 year'),
+            'starts_at' => null,
+            'ends_at' => null,
+            'venue' => null,
+            'notes' => null,
+            'is_primary' => false,
+            'sort_order' => 0,
+        ];
+    }
+
+    public function primary(): static
+    {
+        return $this->state(fn () => ['is_primary' => true]);
     }
 }

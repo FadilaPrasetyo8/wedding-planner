@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property int $template_section_id
  * @property string $type
- * @property array{name: string, date_offset_days: int, is_primary: bool, sort_order: int} $payload
+ * @property array<string, mixed> $payload
  * @property int $sort_order
  * @property-read TemplateSection $section
  */

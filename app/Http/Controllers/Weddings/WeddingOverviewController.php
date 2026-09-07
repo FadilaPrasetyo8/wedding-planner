@@ -5,19 +5,20 @@ namespace App\Http\Controllers\Weddings;
 use App\Http\Controllers\Controller;
 use App\Models\Wedding;
 use App\Support\ActiveWeddingContext;
+use App\Support\Planning\WeddingDashboardData;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class WeddingOverviewController extends Controller
 {
-    public function show(Wedding $wedding, ActiveWeddingContext $context): Response
-    {
+    public function show(
+        Wedding $wedding,
+        ActiveWeddingContext $context,
+        WeddingDashboardData $dashboard,
+    ): Response {
         return Inertia::render('weddings/show', [
-            'events' => $wedding->events()
-                ->orderBy('event_date')
-                ->orderBy('sort_order')
-                ->get(['uuid', 'name', 'event_date', 'is_primary']),
+            'dashboard' => $dashboard->for($wedding),
             'membershipRole' => $context->membership()->role->value,
         ]);
     }

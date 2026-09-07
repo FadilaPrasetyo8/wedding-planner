@@ -71,6 +71,24 @@ class Wedding extends Model
         return $this->hasMany(WeddingEvent::class);
     }
 
+    /** @return HasMany<TaskCategory, $this> */
+    public function taskCategories(): HasMany
+    {
+        return $this->hasMany(TaskCategory::class);
+    }
+
+    /** @return HasMany<TaskStatus, $this> */
+    public function taskStatuses(): HasMany
+    {
+        return $this->hasMany(TaskStatus::class);
+    }
+
+    /** @return HasMany<Task, $this> */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
     /** @return HasMany<WeddingInvitation, $this> */
     public function invitations(): HasMany
     {

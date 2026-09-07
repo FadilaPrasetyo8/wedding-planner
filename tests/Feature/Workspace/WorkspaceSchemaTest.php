@@ -49,21 +49,19 @@ class WorkspaceSchemaTest extends TestCase
         WeddingMember::factory()->for($wedding)->owner()->create();
     }
 
-    public function test_seeded_templates_contain_only_supported_event_items(): void
+    public function test_seeded_templates_contain_only_supported_planning_items(): void
     {
         $this->seed();
 
         $this->assertGreaterThanOrEqual(2, Template::query()->count());
-        $this->assertDatabaseMissing('template_items', [
-            'type' => 'task',
-        ]);
         $this->assertSame(
-            ['event'],
+            ['event', 'task'],
             Template::query()->with('sections.items')->get()
                 ->flatMap->sections
                 ->flatMap->items
                 ->pluck('type')
                 ->unique()
+                ->sort()
                 ->values()
                 ->all(),
         );

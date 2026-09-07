@@ -70,9 +70,9 @@ This log records product and architecture decisions that implementation must not
 
 ## D-012 — Template Timeline Anchor
 
-- **Status:** Pending; required before M2
-- **Decision needed:** Choose whether relative template tasks anchor to the akad date or to a user-selected primary wedding event.
-- **Consequence:** M0 and M1 may proceed, but M2 date-offset behavior must not be implemented until this is accepted and recorded.
+- **Status:** Accepted
+- **Decision:** Template-relative tasks anchor to the wedding's user-selected primary event. When a default primary event must be chosen, prefer an Akad event; if no usable primary event exists, fall back to `weddings.wedding_date`.
+- **Consequence:** Changing the primary event recalculates only `template_relative` task dates from their stored offsets and requires explicit confirmation when relative tasks exist. Manual task dates never move.
 
 ## D-013 — M0 Supported Application Baseline
 
@@ -108,5 +108,5 @@ This log records product and architecture decisions that implementation must not
 
 - **Status:** Accepted
 - **Decision:** M1 uses application-owned templates, sections, and typed template items, but validates and clones only supported initial wedding events. It does not create or store unvalidated M2–M5 operational data.
-- **Consequence:** Wedding creation, owner membership, initial event creation, and supported template cloning are atomic and independent. The timeline-anchor decision in D-012 remains pending for M2.
+- **Consequence:** Wedding creation, owner membership, initial event creation, and supported template cloning are atomic and independent. M2 expands this controlled template model only after applying the accepted timeline-anchor behavior in D-012.
 

@@ -2,12 +2,17 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WeddingInvitationResponseController;
+use App\Http\Controllers\Weddings\TaskCategoryController;
+use App\Http\Controllers\Weddings\TaskController;
+use App\Http\Controllers\Weddings\TaskStatusController;
 use App\Http\Controllers\Weddings\WeddingController;
+use App\Http\Controllers\Weddings\WeddingEventController;
 use App\Http\Controllers\Weddings\WeddingInvitationController;
 use App\Http\Controllers\Weddings\WeddingMemberController;
 use App\Http\Controllers\Weddings\WeddingOverviewController;
 use App\Http\Controllers\Weddings\WeddingOwnershipController;
 use App\Http\Controllers\Weddings\WeddingSettingsController;
+use App\Http\Controllers\Weddings\WeddingTimelineController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\PasswordResetLinkController;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
@@ -33,6 +38,25 @@ Route::middleware('auth')->group(function () {
         ->middleware('wedding.member')
         ->group(function () {
             Route::get('/', [WeddingOverviewController::class, 'show'])->name('weddings.show');
+            Route::scopeBindings()->group(function () {
+                Route::resource('events', WeddingEventController::class)
+                    ->names('weddings.events');
+                Route::get('planning', [TaskController::class, 'index'])->name('weddings.planning.index');
+                Route::get('planning/timeline', WeddingTimelineController::class)->name('weddings.planning.timeline');
+                Route::get('planning/configuration', [TaskController::class, 'configuration'])->name('weddings.planning.configuration');
+                Route::get('planning/create', [TaskController::class, 'create'])->name('weddings.tasks.create');
+                Route::post('planning', [TaskController::class, 'store'])->name('weddings.tasks.store');
+                Route::get('planning/{task}', [TaskController::class, 'show'])->name('weddings.tasks.show');
+                Route::get('planning/{task}/edit', [TaskController::class, 'edit'])->name('weddings.tasks.edit');
+                Route::patch('planning/{task}', [TaskController::class, 'update'])->name('weddings.tasks.update');
+                Route::delete('planning/{task}', [TaskController::class, 'destroy'])->name('weddings.tasks.destroy');
+                Route::post('planning/categories', [TaskCategoryController::class, 'store'])->name('weddings.task-categories.store');
+                Route::patch('planning/categories/{task_category}', [TaskCategoryController::class, 'update'])->name('weddings.task-categories.update');
+                Route::delete('planning/categories/{task_category}', [TaskCategoryController::class, 'destroy'])->name('weddings.task-categories.destroy');
+                Route::post('planning/statuses', [TaskStatusController::class, 'store'])->name('weddings.task-statuses.store');
+                Route::patch('planning/statuses/{task_status}', [TaskStatusController::class, 'update'])->name('weddings.task-statuses.update');
+                Route::delete('planning/statuses/{task_status}', [TaskStatusController::class, 'destroy'])->name('weddings.task-statuses.destroy');
+            });
             Route::get('members', [WeddingOverviewController::class, 'members'])->name('weddings.members.index');
             Route::get('settings', [WeddingOverviewController::class, 'settings'])->name('weddings.settings.edit');
             Route::post('invitations', [WeddingInvitationController::class, 'store'])

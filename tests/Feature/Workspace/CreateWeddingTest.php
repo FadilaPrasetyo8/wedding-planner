@@ -3,6 +3,8 @@
 namespace Tests\Feature\Workspace;
 
 use App\Actions\Weddings\CloneWeddingTemplateAction;
+use App\Enums\TaskDateMode;
+use App\Enums\TaskPriority;
 use App\Enums\WeddingMemberRole;
 use App\Models\Template;
 use App\Models\User;
@@ -120,5 +122,93 @@ class CreateWeddingTest extends TestCase
 
         $this->assertDatabaseHas('wedding_events', ['wedding_id' => $second->id, 'name' => 'Acara Utama']);
         $this->assertDatabaseHas('template_items', ['template_section_id' => $template->sections()->firstOrFail()->id]);
+    }
+
+    public function test_template_tasks_clone_with_relative_dates_and_remain_independent(): void
+    {
+        $template = Template::query()->create([
+            'name' => 'Rencana Ringkas',
+            'slug' => 'rencana-ringkas',
+            'is_active' => true,
+        ]);
+        $section = $template->sections()->create(['name' => 'Persiapan', 'sort_order' => 1]);
+        $section->items()->create([
+            'type' => 'task',
+            'payload' => [
+                'title' => 'Pesan lokasi acara',
+                'category' => 'Vendor & Lokasi',
+                'status_behavior' => 'todo',
+                'priority' => TaskPriority::High->value,
+                'start_offset_days' => -120,
+                'due_offset_days' => -90,
+            ],
+            'sort_order' => 1,
+        ]);
+        $users = User::factory(2)->create();
+
+        foreach ($users as $index => $user) {
+            $this->actingAs($user)->post(route('weddings.store'), [
+                'name' => 'Wedding '.$index,
+                'partner_one_name' => 'Alya',
+                'partner_two_name' => 'Bima',
+                'wedding_date' => '2027-06-20',
+                'timezone' => 'Asia/Jakarta',
+                'initial_event_name' => 'Akad',
+                'template_id' => $template->id,
+            ])->assertRedirect();
+        }
+
+        $first = Wedding::query()->orderBy('id')->firstOrFail();
+        $second = Wedding::query()->orderByDesc('id')->firstOrFail();
+        $firstTask = $first->tasks()->firstOrFail();
+
+        $this->assertSame(TaskDateMode::TemplateRelative, $firstTask->date_mode);
+        $this->assertSame('2027-02-20', $firstTask->start_date->toDateString());
+        $this->assertSame('2027-03-22', $firstTask->due_date->toDateString());
+
+        $firstTask->update(['title' => 'Judul khusus wedding pertama']);
+        $this->assertDatabaseHas('tasks', [
+            'wedding_id' => $second->id,
+            'title' => 'Pesan lokasi acara',
+        ]);
+        $this->assertDatabaseHas('template_items', [
+            'id' => $section->items()->firstOrFail()->id,
+            'type' => 'task',
+        ]);
+    }
+
+    public function test_invalid_template_task_rolls_back_wedding_creation(): void
+    {
+        $template = Template::query()->create([
+            'name' => 'Template Tidak Valid',
+            'slug' => 'template-tidak-valid',
+            'is_active' => true,
+        ]);
+        $section = $template->sections()->create(['name' => 'Persiapan', 'sort_order' => 1]);
+        $section->items()->create([
+            'type' => 'task',
+            'payload' => [
+                'title' => 'Tanggal terbalik',
+                'category' => 'Persiapan Utama',
+                'status_behavior' => 'todo',
+                'priority' => 'high',
+                'start_offset_days' => -30,
+                'due_offset_days' => -60,
+            ],
+            'sort_order' => 1,
+        ]);
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('weddings.store'), [
+            'name' => 'Wedding Gagal',
+            'partner_one_name' => 'Alya',
+            'partner_two_name' => 'Bima',
+            'wedding_date' => '2027-06-20',
+            'timezone' => 'Asia/Jakarta',
+            'initial_event_name' => 'Akad',
+            'template_id' => $template->id,
+        ])->assertSessionHasErrors('template_id');
+
+        $this->assertDatabaseMissing('weddings', ['name' => 'Wedding Gagal']);
     }
 }
