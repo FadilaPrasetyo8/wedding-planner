@@ -1,0 +1,248 @@
+<h2>Berikut perubahan UI yang sudah diterapkan</h2>
+<p class="subtitle">
+    Lihat di browser — lalu beri feedback di terminal. Klik pilihan jika setuju
+    / tidak.
+</p>
+
+<div class="section">
+    <h3>1. Palet warna baru — "Bright Romantic"</h3>
+    <p>Cerah, hangat, romantis. Menggantikan merah gelap (maroon) yang lama.</p>
+    <div class="mockup">
+        <div class="mockup-header">Palet lama (atas) vs baru (bawah)</div>
+        <div class="mockup-body">
+            <div
+                style="
+                    display: flex;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    margin-bottom: 6px;
+                "
+            >
+                <div style="flex: 1; min-width: 90px; text-align: center">
+                    <div
+                        style="
+                            height: 56px;
+                            border-radius: 10px;
+                            background: #9d5561;
+                        "
+                    ></div>
+                    <small> Lama: primary maroon</small>
+                </div>
+                <div style="flex: 1; min-width: 90px; text-align: center">
+                    <div
+                        style="
+                            height: 56px;
+                            border-radius: 10px;
+                            background: #fdf8f4;
+                            border: 1px solid #ddd;
+                        "
+                    ></div>
+                    <small>Lama: ivory kusam</small>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <div style="flex: 1; min-width: 90px; text-align: center">
+                    <div
+                        style="
+                            height: 56px;
+                            border-radius: 10px;
+                            background: #c14e62;
+                            color: #fff;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: 600;
+                        "
+                    >
+                        Coral Rose
+                    </div>
+                    <small>Primary baru</small>
+                </div>
+                <div style="flex: 1; min-width: 90px; text-align: center">
+                    <div
+                        style="
+                            height: 56px;
+                            border-radius: 10px;
+                            background: #fffaf6;
+                            border: 1px solid #f4e2da;
+                        "
+                    ></div>
+                    <small>Warm ivory lebih terang</small>
+                </div>
+                <div style="flex: 1; min-width: 90px; text-align: center">
+                    <div
+                        style="
+                            height: 56px;
+                            border-radius: 10px;
+                            background: #f7d9c4;
+                        "
+                    ></div>
+                    <small>Champagne (aksen lembut)</small>
+                </div>
+                <div style="flex: 1; min-width: 90px; text-align: center">
+                    <div
+                        style="
+                            height: 56px;
+                            border-radius: 10px;
+                            background: #e0708c;
+                        "
+                    ></div>
+                    <small>Rose cerah (hover/chart)</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h3>2. Sidebar: 10 item datar → 4 grup berlabel</h3>
+    <div class="split">
+        <div class="mockup">
+            <div class="mockup-header">Lama — semua setara</div>
+            <div class="mockup-body" style="font-size: 12px">
+                <div class="mock-sidebar" style="padding: 10px">
+                    Ringkasan<br />Rencana tugas<br />Acara<br />Keuangan<br />Seserahan<br />Administrasi<br />Vendor<br />Tamu<br />Anggota<br />Pengaturan
+                </div>
+            </div>
+        </div>
+        <div class="mockup">
+            <div class="mockup-header">Baru — berkelompok</div>
+            <div class="mockup-body" style="font-size: 12px">
+                <div class="mock-sidebar" style="padding: 10px">
+                    <div
+                        style="
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            font-size: 10px;
+                            opacity: 0.6;
+                            margin-top: 6px;
+                        "
+                    >
+                        Utama
+                    </div>
+                    Ringkasan · Rencana tugas · Acara
+                    <div
+                        style="
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            font-size: 10px;
+                            opacity: 0.6;
+                            margin-top: 10px;
+                        "
+                    >
+                        Keuangan
+                    </div>
+                    Anggaran &amp; pembayaran
+                    <div
+                        style="
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            font-size: 10px;
+                            opacity: 0.6;
+                            margin-top: 10px;
+                        "
+                    >
+                        Persiapan
+                    </div>
+                    Seserahan · Administrasi · Vendor · Tamu
+                    <div
+                        style="
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            font-size: 10px;
+                            opacity: 0.6;
+                            margin-top: 10px;
+                        "
+                    >
+                        Ruang kerja
+                    </div>
+                    Anggota · Pengaturan
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h3>3. Keuangan: tombol campur aduk → tab konsisten</h3>
+    <p>
+        Semua 7 halaman keuangan kini punya tab yang sama (Ringkasan · Anggaran
+        · Skenario · Tabungan), plus sub-tab di Tabungan (Target · Penabung ·
+        Riwayat setoran). Tidak ada lagi "Buka anggaran" yang tersembunyi di
+        tombol.
+    </p>
+    <div class="mockup">
+        <div class="mockup-header">Navigasi tab baru</div>
+        <div class="mockup-body">
+            <div
+                style="
+                    display: flex;
+                    gap: 4px;
+                    border-bottom: 2px solid #f4e2da;
+                    padding-bottom: 0;
+                "
+            >
+                <span
+                    style="
+                        padding: 8px 14px;
+                        border-bottom: 2px solid #c14e62;
+                        color: #c14e62;
+                        font-weight: 600;
+                        font-size: 13px;
+                    "
+                    >Ringkasan</span
+                >
+                <span style="padding: 8px 14px; color: #967d88; font-size: 13px"
+                    >Anggaran</span
+                >
+                <span style="padding: 8px 14px; color: #967d88; font-size: 13px"
+                    >Skenario</span
+                >
+                <span style="padding: 8px 14px; color: #967d88; font-size: 13px"
+                    >Tabungan</span
+                >
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h3>4. Welcome page: Inggris → Bahasa Indonesia</h3>
+    <p>Seluruh app kini konsisten berbahasa Indonesia.</p>
+</div>
+
+<div class="section">
+    <h3>Bagaimana pendapatmu?</h3>
+    <div class="options">
+        <div class="option" data-choice="good" onclick="toggleSelect(this)">
+            <div class="letter">A</div>
+            <div class="content">
+                <h3>Sudah bagus, lanjut ke detail halaman lain</h3>
+                <p>
+                    Palet &amp; struktur sudah cocok — tolong terapkan polish ke
+                    halaman lain
+                </p>
+            </div>
+        </div>
+        <div class="option" data-choice="warmer" onclick="toggleSelect(this)">
+            <div class="letter">B</div>
+            <div class="content">
+                <h3>
+                    Warnanya masih kurang — bikin lebih hangat/romantis lagi
+                </h3>
+                <p>Gua push varian palet lain untuk dibandingkan</p>
+            </div>
+        </div>
+        <div class="option" data-choice="ux-more" onclick="toggleSelect(this)">
+            <div class="letter">C</div>
+            <div class="content">
+                <h3>
+                    UX masih membingungkan — ada halaman lain yang bermasalah
+                </h3>
+                <p>
+                    Sebutkan halamannya di terminal, gua bedah bersama di sini
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

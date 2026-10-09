@@ -14,6 +14,8 @@ class CreateWeddingAction
     public function __construct(
         private CloneWeddingTemplateAction $cloner,
         private SeedWeddingPlanningDefaultsAction $planningDefaults,
+        private SeedWeddingFinanceDefaultsAction $financeDefaults,
+        private SeedWeddingLogisticsDefaultsAction $logisticsDefaults,
     ) {}
 
     /**
@@ -25,6 +27,8 @@ class CreateWeddingAction
             $wedding = Wedding::query()->create(Arr::only($data, ['name', 'partner_one_name', 'partner_two_name', 'wedding_date', 'planning_start_date', 'timezone', 'target_budget']));
             $wedding->memberships()->create(['user_id' => $user->id, 'role' => WeddingMemberRole::Owner, 'joined_at' => now()]);
             $this->planningDefaults->execute($wedding);
+            $this->financeDefaults->execute($wedding);
+            $this->logisticsDefaults->execute($wedding);
             $wedding->events()->create([
                 'name' => $data['initial_event_name'],
                 'type' => mb_strtolower($data['initial_event_name']) === 'akad' ? 'akad' : 'custom',

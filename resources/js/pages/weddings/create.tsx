@@ -40,7 +40,7 @@ export default function CreateWedding({ templates, timezones }: Props) {
                         </p>
                         <h1
                             id="onboarding-title"
-                            className="mt-3 max-w-lg text-3xl font-semibold tracking-tight sm:text-4xl"
+                            className="font-display mt-3 max-w-lg text-3xl font-semibold tracking-tight sm:text-4xl"
                         >
                             Ciptakan ruang tenang untuk perjalanan kalian.
                         </h1>

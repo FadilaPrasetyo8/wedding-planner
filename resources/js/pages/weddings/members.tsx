@@ -2,6 +2,7 @@ import { Form, Head, usePage } from '@inertiajs/react';
 import { MailPlus, ShieldCheck, UserRound } from 'lucide-react';
 import WeddingInvitationController from '@/actions/App/Http/Controllers/Weddings/WeddingInvitationController';
 import WeddingMemberController from '@/actions/App/Http/Controllers/Weddings/WeddingMemberController';
+import { ConfirmSubmit } from '@/components/confirm-submit';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,7 +48,7 @@ export default function Members({
                     <p className="text-primary text-sm font-semibold tracking-[0.14em] uppercase">
                         {activeWedding.name}
                     </p>
-                    <h1 className="mt-3 text-3xl font-semibold tracking-tight">
+                    <h1 className="font-display mt-3 text-3xl font-semibold tracking-tight">
                         Anggota ruang
                     </h1>
                     <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
@@ -221,18 +222,17 @@ export default function Members({
                                                 {roleNames[invitation.role]}
                                             </p>
                                         </div>
-                                        <Form
-                                            {...WeddingInvitationController.destroy.form(
+                                        <ConfirmSubmit
+                                            form={WeddingInvitationController.destroy.form(
                                                 [
                                                     activeWedding.uuid,
                                                     invitation.uuid,
                                                 ],
                                             )}
-                                        >
-                                            <Button variant="ghost" size="sm">
-                                                Batalkan
-                                            </Button>
-                                        </Form>
+                                            label="Batalkan"
+                                            confirmLabel="Ya, batalkan"
+                                            context={`undangan ${invitation.email}`}
+                                        />
                                     </li>
                                 ))}
                             </ul>

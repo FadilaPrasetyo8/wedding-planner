@@ -1,10 +1,16 @@
-import { Form, Head, Link, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, Plus, Settings2, Trash2 } from 'lucide-react';
+import { Form, Head, router, usePage } from '@inertiajs/react';
+import { Plus, Settings2, Trash2 } from 'lucide-react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { SectionTabs } from '@/components/section-tabs';
+import {
+    index as planningIndex,
+    timeline as planningTimeline,
+    configuration as planningConfiguration,
+} from '@/routes/weddings/planning';
 import type { ActiveWedding } from '@/types';
 
 type ConfigurationItem = {
@@ -62,7 +68,7 @@ export default function Configuration({
                             <p className="text-primary text-xs font-semibold tracking-[0.16em] uppercase">
                                 {activeWedding.name}
                             </p>
-                            <h1 className="mt-2 flex items-center gap-3 text-3xl font-semibold tracking-tight">
+                            <h1 className="font-display mt-2 flex items-center gap-3 text-3xl font-semibold tracking-tight">
                                 <Settings2
                                     className="size-7"
                                     aria-hidden="true"
@@ -74,13 +80,24 @@ export default function Configuration({
                                 perilaku siklus tugas.
                             </p>
                         </div>
-                        <Button asChild variant="outline" className="min-h-11">
-                            <Link href={base}>
-                                <ArrowLeft aria-hidden="true" />
-                                Kembali ke rencana
-                            </Link>
-                        </Button>
                     </header>
+                    <SectionTabs
+                        ariaLabel="Navigasi rencana tugas"
+                        items={[
+                            {
+                                title: 'Daftar',
+                                href: planningIndex(activeWedding.uuid),
+                            },
+                            {
+                                title: 'Linimasa',
+                                href: planningTimeline(activeWedding.uuid),
+                            },
+                            {
+                                title: 'Konfigurasi',
+                                href: planningConfiguration(activeWedding.uuid),
+                            },
+                        ]}
+                    />
                     {!canEdit && (
                         <p className="bg-muted mt-5 rounded-xl border px-4 py-3 text-sm">
                             Mode hanya lihat. Pemilik atau editor dapat mengubah

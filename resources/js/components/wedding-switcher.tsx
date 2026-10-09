@@ -11,8 +11,8 @@ export function WeddingSwitcher() {
 
     return (
         <details className="group relative">
-            <summary className="hover:bg-sidebar-accent focus-visible:ring-sidebar-ring flex min-h-11 cursor-pointer list-none items-center gap-3 rounded-xl px-2.5 py-2 outline-none focus-visible:ring-2">
-                <span className="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-xl font-serif text-lg">
+            <summary className="hover:bg-sidebar-accent focus-visible:ring-sidebar-ring flex min-h-11 cursor-pointer list-none items-center gap-3 rounded-[var(--radius)] border border-transparent px-2.5 py-2 outline-none focus-visible:ring-2">
+                <span className="bg-primary/10 text-primary font-display flex size-9 shrink-0 items-center justify-center rounded-[var(--radius)] text-lg">
                     W
                 </span>
                 <span className="min-w-0 flex-1 text-left">
@@ -28,12 +28,12 @@ export function WeddingSwitcher() {
                     aria-hidden="true"
                 />
             </summary>
-            <div className="bg-popover text-popover-foreground absolute top-full right-0 left-0 z-50 mt-2 rounded-2xl border p-2 shadow-lg">
+            <div className="bg-popover text-popover-foreground absolute top-full right-0 left-0 z-50 mt-2 rounded-[var(--radius)] border p-2 shadow-[0_8px_24px_rgb(23_21_18_/_0.14)]">
                 {weddings.map((wedding) => (
                     <Link
                         key={wedding.uuid}
                         href={show(wedding.uuid)}
-                        className="hover:bg-accent focus-visible:bg-accent flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 outline-none"
+                        className="hover:bg-accent focus-visible:bg-accent flex min-h-11 items-center gap-3 rounded-[var(--radius)] px-3 py-2 outline-none"
                     >
                         <span className="min-w-0 flex-1">
                             <span className="block truncate text-sm font-medium">
@@ -53,7 +53,7 @@ export function WeddingSwitcher() {
                 ))}
                 <Link
                     href={create()}
-                    className="hover:bg-accent focus-visible:bg-accent mt-1 flex min-h-11 items-center gap-3 rounded-xl border-t px-3 py-2 text-sm font-medium outline-none"
+                    className="hover:bg-accent focus-visible:bg-accent mt-1 flex min-h-11 items-center gap-3 rounded-[var(--radius)] border-t px-3 py-2 text-sm font-medium outline-none"
                 >
                     <Plus className="size-4" aria-hidden="true" />
                     Buat ruang baru

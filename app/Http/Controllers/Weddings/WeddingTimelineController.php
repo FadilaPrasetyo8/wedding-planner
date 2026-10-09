@@ -36,6 +36,7 @@ class WeddingTimelineController extends Controller
             'events' => $wedding->events()->orderBy('event_date')->limit(50)->get(['uuid', 'name', 'event_date', 'is_primary']),
             'filters' => $filters,
             'canEdit' => $request->user()->can('editOperationalData', $wedding),
+            'canExport' => $request->user()->can('export', $wedding),
             'categories' => $wedding->taskCategories()->orderBy('sort_order')->get(['uuid', 'name']),
             'statuses' => $wedding->taskStatuses()->orderBy('sort_order')->get(['uuid', 'name']),
             'assignees' => $wedding->activeMemberships()->with('user:id,name')->orderBy('joined_at')->get()->map(fn ($membership): array => ['id' => $membership->id, 'name' => $membership->user->name]),

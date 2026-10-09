@@ -6,9 +6,14 @@ use App\Enums\TaskBehavior;
 use App\Models\Task;
 use App\Models\Wedding;
 use App\Models\WeddingEvent;
+use App\Support\Finance\FinanceCalculations;
 
 class WeddingDashboardData
 {
+    public function __construct(
+        private readonly FinanceCalculations $calculations = new FinanceCalculations,
+    ) {}
+
     /** @return array<string, mixed> */
     public function for(Wedding $wedding): array
     {
@@ -34,6 +39,8 @@ class WeddingDashboardData
                 TaskBehavior::Completed->value,
                 TaskBehavior::Cancelled->value,
             ]));
+
+        $budgetSummary = $this->calculations->budgetSummary($wedding);
 
         return [
             'primaryEvent' => $primaryEvent ? [
@@ -87,6 +94,14 @@ class WeddingDashboardData
                     'color' => $category->color,
                     'count' => $category->tasks_count,
                 ]),
+            'financeSummary' => [
+                'estimatedTotal' => $budgetSummary['estimatedTotal'],
+                'committedTotal' => $budgetSummary['committedTotal'],
+                'paidTotal' => $budgetSummary['paidTotal'],
+                'outstanding' => $budgetSummary['outstanding'],
+                'overpaid' => $budgetSummary['overpaid'],
+            ],
+            'upcomingPayments' => $this->calculations->upcomingPayments($wedding, 3),
         ];
     }
 

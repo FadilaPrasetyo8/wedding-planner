@@ -1,0 +1,197 @@
+<h2>Warm Sunset sudah diterapkan 🎉</h2>
+<p class="subtitle">
+    Palet pilihanmu (B — Warm Sunset) sudah masuk ke
+    <code>resources/css/app.css</code> — light &amp; dark mode. Refresh halaman
+    app-nya untuk lihat hasil aslinya.
+</p>
+
+<style>
+    .ws-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .ws-chip {
+        flex: 1;
+        min-width: 100px;
+        text-align: center;
+    }
+    .ws-chip small {
+        display: block;
+        margin-top: 4px;
+        opacity: 0.7;
+    }
+</style>
+
+<div class="section">
+    <h3>Token yang terpasang</h3>
+    <div class="mockup">
+        <div class="mockup-header">Light mode</div>
+        <div class="mockup-body">
+            <div class="ws-row">
+                <div class="ws-chip">
+                    <div
+                        style="
+                            height: 52px;
+                            border-radius: 10px;
+                            background: #e2795b;
+                            color: #fff;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: 600;
+                        "
+                    >
+                        Primary
+                    </div>
+                    <small>#e2795b peach-terracotta</small>
+                </div>
+                <div class="ws-chip">
+                    <div
+                        style="
+                            height: 52px;
+                            border-radius: 10px;
+                            background: #fffaf0;
+                            border: 1px solid #ddd;
+                        "
+                    ></div>
+                    <small>#fffaf0 golden cream</small>
+                </div>
+                <div class="ws-chip">
+                    <div
+                        style="
+                            height: 52px;
+                            border-radius: 10px;
+                            background: #ffdcc6;
+                        "
+                    ></div>
+                    <small>#ffdcc6 champagne-peach</small>
+                </div>
+                <div class="ws-chip">
+                    <div
+                        style="
+                            height: 52px;
+                            border-radius: 10px;
+                            background: #ffeeda;
+                        "
+                    ></div>
+                    <small>#ffeeda sidebar hangat</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mockup">
+        <div class="mockup-header">Dark mode — charcoal cokelat hangat</div>
+        <div class="mockup-body">
+            <div class="ws-row">
+                <div class="ws-chip">
+                    <div
+                        style="
+                            height: 52px;
+                            border-radius: 10px;
+                            background: #ec8f6f;
+                            color: #2a2420;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: 600;
+                        "
+                    >
+                        Primary
+                    </div>
+                    <small>#ec8f6f peach terang</small>
+                </div>
+                <div class="ws-chip">
+                    <div
+                        style="
+                            height: 52px;
+                            border-radius: 10px;
+                            background: #2a2420;
+                            border: 1px solid #555;
+                        "
+                    ></div>
+                    <small>#2a2420 charcoal hangat</small>
+                </div>
+                <div class="ws-chip">
+                    <div
+                        style="
+                            height: 52px;
+                            border-radius: 10px;
+                            background: #e0b478;
+                        "
+                    ></div>
+                    <small>#e0b478 aksen emas</small>
+                </div>
+                <div class="ws-chip">
+                    <div
+                        style="
+                            height: 52px;
+                            border-radius: 10px;
+                            background: #312a24;
+                        "
+                    ></div>
+                    <small>#312a24 sidebar</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h3>Verifikasi</h3>
+    <ul>
+        <li>✅ vp check — 111 file terformat, 190 file lint bersih</li>
+        <li>✅ tsc --noEmit — tanpa error</li>
+        <li>✅ vitest — 20/20 lulus</li>
+        <li>✅ vite build — sukses</li>
+    </ul>
+    <p>
+        Semua warna tetap lewat token CSS — tidak ada komponen yang hardcode hex
+        brand. Warna semantik (sukses/peringatan) tetap terpisah dari warna
+        brand, sesuai aturan CLAUDE.md.
+    </p>
+</div>
+
+<div class="section">
+    <h3>Lanjut ke mana?</h3>
+    <div class="options">
+        <div
+            class="option"
+            data-choice="detail-polish"
+            onclick="toggleSelect(this)"
+        >
+            <div class="letter">A</div>
+            <div class="content">
+                <h3>Poles detail halaman lain dengan palet baru</h3>
+                <p>
+                    Gua audit tiap modul (tamu, vendor, checklist) dan rapikan
+                    yang masih seragam jelek
+                </p>
+            </div>
+        </div>
+        <div class="option" data-choice="start-m5" onclick="toggleSelect(this)">
+            <div class="letter">B</div>
+            <div class="content">
+                <h3>Mulai M5 — Event day (rundown &amp; playlist)</h3>
+                <p>
+                    UI redesign selesai, lanjut milestone berikutnya (butuh
+                    autorisasi product owner)
+                </p>
+            </div>
+        </div>
+        <div
+            class="option"
+            data-choice="tweak-again"
+            onclick="toggleSelect(this)"
+        >
+            <div class="letter">C</div>
+            <div class="content">
+                <h3>Palet masih kurang pas — tweak lagi</h3>
+                <p>
+                    Sebutkan bagian mana yang kurang (primary terlalu oranye,
+                    krem terlalu kuning, dsb.)
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

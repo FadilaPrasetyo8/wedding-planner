@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Form, Link, usePage } from '@inertiajs/react';
 import WeddingEventController from '@/actions/App/Http/Controllers/Weddings/WeddingEventController';
 import InputError from '@/components/input-error';
@@ -21,6 +22,7 @@ export type EventValue = {
 
 export default function EventForm({ event }: { event?: EventValue }) {
     const { activeWedding } = usePage<{ activeWedding: ActiveWedding }>().props;
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
     const form = event
         ? WeddingEventController.update.form([activeWedding.uuid, event.uuid])
         : WeddingEventController.store.form(activeWedding.uuid);
@@ -158,14 +160,41 @@ export default function EventForm({ event }: { event?: EventValue }) {
                     </div>
                     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
                         {event && !event.isPrimary ? (
-                            <Button
-                                type="submit"
-                                form="delete-event"
-                                variant="destructive"
-                                className="min-h-11"
-                            >
-                                Hapus acara
-                            </Button>
+                            confirmingDelete ? (
+                                <span
+                                    role="group"
+                                    aria-label="Konfirmasi hapus acara"
+                                    className="flex flex-wrap items-center gap-2"
+                                >
+                                    <Button
+                                        type="submit"
+                                        form="delete-event"
+                                        variant="destructive"
+                                        className="min-h-11"
+                                    >
+                                        Yakin, hapus
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="min-h-11"
+                                        onClick={() =>
+                                            setConfirmingDelete(false)
+                                        }
+                                    >
+                                        Batal
+                                    </Button>
+                                </span>
+                            ) : (
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    className="min-h-11"
+                                    onClick={() => setConfirmingDelete(true)}
+                                >
+                                    Hapus acara
+                                </Button>
+                            )
                         ) : (
                             <span />
                         )}

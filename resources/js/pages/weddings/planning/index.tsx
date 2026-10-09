@@ -1,8 +1,15 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { AlertTriangle, CalendarRange, Plus, Settings2 } from 'lucide-react';
+import { AlertTriangle, Download, Plus } from 'lucide-react';
 import TaskController from '@/actions/App/Http/Controllers/Weddings/TaskController';
 import { Button } from '@/components/ui/button';
-import PlanningFiltersForm, { queryString } from './planning-filters';
+import { exportUrl } from '@/lib/export-url';
+import { SectionTabs } from '@/components/section-tabs';
+import {
+    index as planningIndex,
+    timeline as planningTimeline,
+    configuration as planningConfiguration,
+} from '@/routes/weddings/planning';
+import PlanningFiltersForm from './planning-filters';
 import type { ActiveWedding } from '@/types';
 
 type TaskRow = {
@@ -29,6 +36,7 @@ export default function PlanningIndex({
     tasks,
     filters,
     canEdit,
+    canExport,
     categories,
     statuses,
     assignees,
@@ -37,6 +45,7 @@ export default function PlanningIndex({
     tasks: PageData;
     filters: Record<string, string | number | boolean>;
     canEdit: boolean;
+    canExport: boolean;
     categories: Option[];
     statuses: Option[];
     assignees: AssigneeOption[];
@@ -44,7 +53,6 @@ export default function PlanningIndex({
 }) {
     const { activeWedding } = usePage<{ activeWedding: ActiveWedding }>().props;
     const planningUrl = `/weddings/${activeWedding.uuid}/planning`;
-    const timelineQuery = queryString(filters);
 
     return (
         <>
@@ -56,7 +64,7 @@ export default function PlanningIndex({
                             <p className="text-primary text-xs font-semibold tracking-[0.16em] uppercase">
                                 {activeWedding.name}
                             </p>
-                            <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+                            <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight">
                                 Rencana tugas
                             </h1>
                             <p className="text-muted-foreground mt-2 text-sm">
@@ -65,30 +73,23 @@ export default function PlanningIndex({
                             </p>
                         </div>
                         <div className="flex flex-wrap gap-2">
-                            <Button
-                                variant="outline"
-                                asChild
-                                className="min-h-11"
-                            >
-                                <Link
-                                    href={`/weddings/${activeWedding.uuid}/planning/configuration`}
+                            {canExport && (
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    className="min-h-11"
                                 >
-                                    <Settings2 aria-hidden="true" />
-                                    Konfigurasi
-                                </Link>
-                            </Button>
-                            <Button
-                                variant="outline"
-                                asChild
-                                className="min-h-11"
-                            >
-                                <Link
-                                    href={`${planningUrl}/timeline${timelineQuery ? `?${timelineQuery}` : ''}`}
-                                >
-                                    <CalendarRange aria-hidden="true" />
-                                    Linimasa
-                                </Link>
-                            </Button>
+                                    <a
+                                        href={exportUrl(
+                                            `/weddings/${activeWedding.uuid}/exports/planning`,
+                                            filters,
+                                        )}
+                                    >
+                                        <Download aria-hidden="true" />
+                                        Ekspor CSV (Excel)
+                                    </a>
+                                </Button>
+                            )}
                             {canEdit ? (
                                 <Button asChild className="min-h-11">
                                     <Link
@@ -107,6 +108,24 @@ export default function PlanningIndex({
                             )}
                         </div>
                     </header>
+
+                    <SectionTabs
+                        ariaLabel="Navigasi rencana tugas"
+                        items={[
+                            {
+                                title: 'Daftar',
+                                href: planningIndex(activeWedding.uuid),
+                            },
+                            {
+                                title: 'Linimasa',
+                                href: planningTimeline(activeWedding.uuid),
+                            },
+                            {
+                                title: 'Konfigurasi',
+                                href: planningConfiguration(activeWedding.uuid),
+                            },
+                        ]}
+                    />
                     <PlanningFiltersForm
                         action={planningUrl}
                         filters={filters}

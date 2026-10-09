@@ -22,7 +22,7 @@ export default function CreateTask({
                     <p className="text-primary text-xs font-semibold tracking-[0.16em] uppercase">
                         {activeWedding.name}
                     </p>
-                    <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+                    <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight">
                         Tambah tugas
                     </h1>
                     <p className="text-muted-foreground mt-2 text-sm">

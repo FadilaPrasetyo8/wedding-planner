@@ -101,6 +101,156 @@ class Wedding extends Model
         return $this->hasMany(ActivityLog::class);
     }
 
+    /** @return HasMany<BudgetCategory, $this> */
+    public function budgetCategories(): HasMany
+    {
+        return $this->hasMany(BudgetCategory::class);
+    }
+
+    /** @return HasMany<BudgetScenario, $this> */
+    public function budgetScenarios(): HasMany
+    {
+        return $this->hasMany(BudgetScenario::class);
+    }
+
+    /**
+     * Alias of budgetScenarios() so scoped route bindings on the {scenario}
+     * parameter resolve (Laravel derives the relationship name from the
+     * route parameter, not the controller signature).
+     *
+     * @return HasMany<BudgetScenario, $this>
+     */
+    public function scenarios(): HasMany
+    {
+        return $this->budgetScenarios();
+    }
+
+    /** @return HasMany<ScenarioItem, $this> */
+    public function scenarioItems(): HasMany
+    {
+        return $this->hasMany(ScenarioItem::class);
+    }
+
+    /** @return HasMany<BudgetItem, $this> */
+    public function budgetItems(): HasMany
+    {
+        return $this->hasMany(BudgetItem::class);
+    }
+
+    /** @return HasMany<PaymentTerm, $this> */
+    public function paymentTerms(): HasMany
+    {
+        return $this->hasMany(PaymentTerm::class);
+    }
+
+    /** @return HasMany<SavingGoal, $this> */
+    public function savingGoals(): HasMany
+    {
+        return $this->hasMany(SavingGoal::class);
+    }
+
+    /** @return HasMany<SavingContributor, $this> */
+    public function savingContributors(): HasMany
+    {
+        return $this->hasMany(SavingContributor::class);
+    }
+
+    /** @return HasMany<SavingContribution, $this> */
+    public function savingContributions(): HasMany
+    {
+        return $this->hasMany(SavingContribution::class);
+    }
+
+    /** @return HasMany<ChecklistGroup, $this> */
+    public function checklistGroups(): HasMany
+    {
+        return $this->hasMany(ChecklistGroup::class);
+    }
+
+    /** @return HasMany<ChecklistCategory, $this> */
+    public function checklistCategories(): HasMany
+    {
+        return $this->hasMany(ChecklistCategory::class);
+    }
+
+    /** @return HasMany<ChecklistStatus, $this> */
+    public function checklistStatuses(): HasMany
+    {
+        return $this->hasMany(ChecklistStatus::class);
+    }
+
+    /** @return HasMany<ChecklistItem, $this> */
+    public function checklistItems(): HasMany
+    {
+        return $this->hasMany(ChecklistItem::class);
+    }
+
+    /** @return HasMany<VendorCategory, $this> */
+    public function vendorCategories(): HasMany
+    {
+        return $this->hasMany(VendorCategory::class);
+    }
+
+    /** @return HasMany<Vendor, $this> */
+    public function vendors(): HasMany
+    {
+        return $this->hasMany(Vendor::class);
+    }
+
+    /** @return HasMany<VendorContact, $this> */
+    public function vendorContacts(): HasMany
+    {
+        return $this->hasMany(VendorContact::class);
+    }
+
+    /** @return HasMany<GuestSide, $this> */
+    public function guestSides(): HasMany
+    {
+        return $this->hasMany(GuestSide::class);
+    }
+
+    /** @return HasMany<GuestGroup, $this> */
+    public function guestGroups(): HasMany
+    {
+        return $this->hasMany(GuestGroup::class);
+    }
+
+    /** @return HasMany<Guest, $this> */
+    public function guests(): HasMany
+    {
+        return $this->hasMany(Guest::class);
+    }
+
+    /** @return HasMany<RundownItem, $this> */
+    public function rundownItems(): HasMany
+    {
+        return $this->hasMany(RundownItem::class);
+    }
+
+    /** @return HasMany<PlaylistItem, $this> */
+    public function playlistItems(): HasMany
+    {
+        return $this->hasMany(PlaylistItem::class);
+    }
+
+    /** @return HasMany<CustomFieldDefinition, $this> */
+    public function customFieldDefinitions(): HasMany
+    {
+        return $this->hasMany(CustomFieldDefinition::class);
+    }
+
+    /** @return HasMany<CustomFieldValue, $this> */
+    public function customFieldValues(): HasMany
+    {
+        return $this->hasMany(CustomFieldValue::class);
+    }
+
+    /** @return HasMany<Attachment, $this> */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(Attachment::class);
+    }
+
     /** @return array<string, string> */
     protected function casts(): array
     {

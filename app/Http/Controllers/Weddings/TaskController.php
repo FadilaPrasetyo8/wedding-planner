@@ -9,6 +9,7 @@ use App\Http\Requests\Weddings\StoreTaskRequest;
 use App\Http\Requests\Weddings\UpdateTaskRequest;
 use App\Models\Task;
 use App\Models\Wedding;
+use App\Support\CustomFields\SubjectCustomFields;
 use App\Support\Planning\TaskListQuery;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -44,6 +45,7 @@ class TaskController extends Controller
             'tasks' => $tasks,
             'filters' => [...$filters, 'overdue' => $request->boolean('overdue')],
             'canEdit' => $request->user()->can('editOperationalData', $wedding),
+            'canExport' => $request->user()->can('export', $wedding),
             ...$this->formOptions($wedding, activeOnly: false),
         ]);
     }
@@ -93,6 +95,8 @@ class TaskController extends Controller
                 'completedAt' => $task->completed_at?->toIso8601String(),
                 'notes' => $task->notes,
             ],
+            'customFields' => SubjectCustomFields::payload($wedding, \App\Enums\CustomFieldModule::Task, $task),
+            'attachments' => SubjectCustomFields::attachments($wedding, \App\Enums\AttachmentModule::Task, $task),
             'canEdit' => request()->user()->can('update', $task),
         ]);
     }

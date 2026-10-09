@@ -33,7 +33,7 @@ export default function Invitation({ token, invitation }: Props) {
                     </p>
                     <h1
                         id="invitation-title"
-                        className="mt-3 text-3xl font-semibold tracking-tight"
+                        className="font-display mt-3 text-3xl font-semibold tracking-tight"
                     >
                         {invitation.partnerNames}
                     </h1>

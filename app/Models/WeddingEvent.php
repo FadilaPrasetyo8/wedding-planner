@@ -54,6 +54,18 @@ class WeddingEvent extends Model
         return $this->hasMany(Task::class);
     }
 
+    /** @return HasMany<RundownItem, $this> */
+    public function rundownItems(): HasMany
+    {
+        return $this->hasMany(RundownItem::class, 'wedding_event_id');
+    }
+
+    /** @return HasMany<PlaylistItem, $this> */
+    public function playlistItems(): HasMany
+    {
+        return $this->hasMany(PlaylistItem::class, 'wedding_event_id');
+    }
+
     /** @return array<string, string> */
     protected function casts(): array
     {

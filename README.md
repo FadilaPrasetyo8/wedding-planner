@@ -37,3 +37,17 @@ npm run build
 `composer test` clears cached configuration, checks PHP formatting and static analysis, then runs PHPUnit against the dedicated PostgreSQL test database.
 
 Do not add database credentials, Supabase secrets, or other server-only values to variables prefixed with `VITE_` or to Inertia page props.
+
+## Operations and release checks
+
+- Liveness: `GET /up`
+- Dependency readiness: `GET /ready`
+- Excel-compatible exports are safe UTF-8 BOM CSV downloads; no spreadsheet dependency is required.
+- Backup: `scripts/backup-database.sh ./backups`
+- Restore: `scripts/restore-database.sh DUMP_FILE --confirm-database=NAME`
+- Smoke checks: `scripts/smoke-test.sh BASE_URL`
+- Full repository release verification: `scripts/release.sh`
+
+See [`docs/operations/environment.md`](docs/operations/environment.md), [`backup-restore.md`](docs/operations/backup-restore.md), [`release-runbook.md`](docs/operations/release-runbook.md), [`monitoring-recovery.md`](docs/operations/monitoring-recovery.md), [`uat-checklist.md`](docs/operations/uat-checklist.md), and [`release-checklist.md`](docs/operations/release-checklist.md).
+
+Manual UAT, controlled staging restore, monitoring, and deployment rehearsal remain external release-gate actions.

@@ -1,5 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { ArrowLeft, CalendarDays, Pencil } from 'lucide-react';
+import { AttachmentsPanel } from '@/components/attachments-panel';
+import { CustomFieldsPanel } from '@/components/custom-fields-panel';
 import { Button } from '@/components/ui/button';
 import type { ActiveWedding } from '@/types';
 
@@ -34,9 +36,16 @@ const formatDate = (date: string) =>
 
 export default function TaskShow({
     task,
+    customFields,
+    attachments,
     canEdit,
 }: {
     task: TaskDetail;
+    customFields: {
+        definitions: Parameters<typeof CustomFieldsPanel>[0]['definitions'];
+        values: Record<string, unknown>;
+    };
+    attachments: Parameters<typeof AttachmentsPanel>[0]['attachments'];
     canEdit: boolean;
 }) {
     const { activeWedding } = usePage<{ activeWedding: ActiveWedding }>().props;
@@ -52,7 +61,7 @@ export default function TaskShow({
                             <p className="text-primary text-xs font-semibold tracking-[0.16em] uppercase">
                                 {activeWedding.name}
                             </p>
-                            <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+                            <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight">
                                 {task.title}
                             </h1>
                             <p className="text-muted-foreground mt-2 text-sm">
@@ -145,6 +154,22 @@ export default function TaskShow({
                             </div>
                         )}
                     </section>
+                    <CustomFieldsPanel
+                        weddingUuid={activeWedding.uuid}
+                        module="task"
+                        subjectUuid={task.uuid}
+                        definitions={customFields.definitions}
+                        values={customFields.values}
+                        canEdit={canEdit}
+                    />
+                    <AttachmentsPanel
+                        weddingUuid={activeWedding.uuid}
+                        module="task"
+                        subjectUuid={task.uuid}
+                        attachments={attachments}
+                        canEdit={canEdit}
+                        context={task.title}
+                    />
                     <p className="text-muted-foreground mt-4 flex items-center gap-2 text-xs">
                         <CalendarDays className="size-4" aria-hidden="true" />
                         Semua tanggal mengikuti konfigurasi ruang pernikahan.

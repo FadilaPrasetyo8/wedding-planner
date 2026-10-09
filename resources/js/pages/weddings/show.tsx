@@ -10,6 +10,9 @@ import {
 } from 'lucide-react';
 import WeddingEventController from '@/actions/App/Http/Controllers/Weddings/WeddingEventController';
 import { Button } from '@/components/ui/button';
+import { formatRupiah } from '@/lib/format';
+import { index as financeIndex } from '@/routes/weddings/finance';
+import { Wallet } from 'lucide-react';
 
 type PageProps = {
     activeWedding: {
@@ -52,6 +55,19 @@ type Dashboard = {
     }[];
     statusGroups: (Group & { behavior: string })[];
     categoryGroups: Group[];
+    financeSummary: {
+        estimatedTotal: number;
+        committedTotal: number;
+        paidTotal: number;
+        outstanding: number;
+        overpaid: boolean;
+    };
+    upcomingPayments: {
+        uuid: string;
+        name: string;
+        dueDate: string | null;
+        remainingAmount: number;
+    }[];
 };
 
 const roleNames = {
@@ -92,7 +108,7 @@ export default function WeddingOverview({
                             <p className="text-primary text-xs font-semibold tracking-[0.16em] uppercase">
                                 Ruang pernikahan
                             </p>
-                            <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+                            <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
                                 {activeWedding.partnerNames}
                             </h1>
                             <p className="text-muted-foreground mt-2 text-sm">
@@ -162,6 +178,113 @@ export default function WeddingOverview({
                             />
                         </div>
                         <div className="grid content-start gap-6">
+                            <section className="bg-card overflow-hidden rounded-2xl border shadow-sm">
+                                <PanelHeader
+                                    icon={<Wallet />}
+                                    title="Ringkasan keuangan"
+                                    description="Estimasi, komit, dan sisa pembayaran."
+                                />
+                                <div className="grid gap-3 p-5 text-sm">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <span className="text-muted-foreground">
+                                            Estimasi
+                                        </span>
+                                        <span className="tabular-nums">
+                                            {formatRupiah(
+                                                dashboard.financeSummary
+                                                    .estimatedTotal,
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4">
+                                        <span className="text-muted-foreground">
+                                            Dikomit
+                                        </span>
+                                        <span className="tabular-nums">
+                                            {formatRupiah(
+                                                dashboard.financeSummary
+                                                    .committedTotal,
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4">
+                                        <span className="text-muted-foreground">
+                                            Sudah dibayar
+                                        </span>
+                                        <span className="tabular-nums">
+                                            {formatRupiah(
+                                                dashboard.financeSummary
+                                                    .paidTotal,
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4 border-t pt-3">
+                                        <span className="font-medium">
+                                            Outstanding
+                                        </span>
+                                        <span className="font-semibold tabular-nums">
+                                            {formatRupiah(
+                                                dashboard.financeSummary
+                                                    .outstanding,
+                                            )}
+                                        </span>
+                                    </div>
+                                    {dashboard.financeSummary.overpaid && (
+                                        <p
+                                            role="alert"
+                                            className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200"
+                                        >
+                                            Ada pembayaran melebihi jumlah komit
+                                            — periksa termin terkait.
+                                        </p>
+                                    )}
+                                    {dashboard.upcomingPayments.length > 0 && (
+                                        <div className="border-t pt-3">
+                                            <p className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+                                                Pembayaran terdekat
+                                            </p>
+                                            <ul className="mt-2 grid gap-2">
+                                                {dashboard.upcomingPayments.map(
+                                                    (payment) => (
+                                                        <li
+                                                            key={payment.uuid}
+                                                            className="flex items-center justify-between gap-4 text-sm"
+                                                        >
+                                                            <span>
+                                                                {payment.name}
+                                                            </span>
+                                                            <span className="text-muted-foreground tabular-nums">
+                                                                {formatRupiah(
+                                                                    payment.remainingAmount,
+                                                                )}
+                                                                {payment.dueDate
+                                                                    ? ` · ${formatDate(payment.dueDate)}`
+                                                                    : ''}
+                                                            </span>
+                                                        </li>
+                                                    ),
+                                                )}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="border-t p-3">
+                                    <Button
+                                        asChild
+                                        variant="ghost"
+                                        className="min-h-11 w-full justify-between"
+                                    >
+                                        <Link
+                                            href={financeIndex(
+                                                activeWedding.uuid,
+                                            )}
+                                        >
+                                            Buka keuangan
+                                            <ChevronRight aria-hidden="true" />
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </section>
                             <section className="bg-card rounded-2xl border shadow-sm">
                                 <PanelHeader
                                     icon={<Clock3 />}

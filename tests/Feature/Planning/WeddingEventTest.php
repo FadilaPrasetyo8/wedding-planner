@@ -29,7 +29,8 @@ class WeddingEventTest extends TestCase
                 ->assertOk()
                 ->assertInertia(fn (Assert $page) => $page
                     ->component('weddings/events/index')
-                    ->has('events', 1));
+                    ->has('events', 1)
+                    ->where('events.0.event_date', '2027-06-20'));
         }
 
         $payload = [
@@ -141,6 +142,46 @@ class WeddingEventTest extends TestCase
         $this->actingAs($owner)->delete(route('weddings.events.destroy', [$wedding, $primary]))
             ->assertSessionHasErrors('event');
         $this->assertDatabaseHas('wedding_events', ['id' => $primary->id]);
+    }
+
+    public function test_legacy_create_and_edit_pages_redirect_to_the_events_index(): void
+    {
+        [$wedding, $owner] = $this->weddingWithMember('owner');
+        $event = $wedding->events()->firstOrFail();
+
+        $this->actingAs($owner)->get(route('weddings.events.create', $wedding))
+            ->assertRedirect(route('weddings.events.index', $wedding));
+
+        $this->actingAs($owner)->get(route('weddings.events.edit', [$wedding, $event]))
+            ->assertRedirect(route('weddings.events.index', $wedding));
+    }
+
+    public function test_event_mutations_flash_a_success_toast(): void
+    {
+        [$wedding, $owner] = $this->weddingWithMember('owner');
+        $event = $wedding->events()->firstOrFail();
+
+        $this->actingAs($owner)->post(route('weddings.events.store', $wedding), [
+            'name' => 'Resepsi',
+            'type' => 'reception',
+            'event_date' => '2027-06-21',
+            'is_primary' => false,
+        ])->assertRedirect(route('weddings.events.index', $wedding))
+            ->assertInertiaFlash('toast', ['type' => 'success', 'message' => 'Acara berhasil ditambahkan.']);
+
+        $this->actingAs($owner)->patch(route('weddings.events.update', [$wedding, $event]), [
+            'name' => 'Akad Nikah',
+            'type' => $event->type,
+            'event_date' => $event->event_date->toDateString(),
+            'is_primary' => true,
+            'confirm_recalculate_relative_tasks' => true,
+        ])->assertRedirect(route('weddings.events.index', $wedding))
+            ->assertInertiaFlash('toast', ['type' => 'success', 'message' => 'Acara berhasil diperbarui.']);
+
+        $nonPrimary = $wedding->events()->where('is_primary', false)->firstOrFail();
+        $this->actingAs($owner)->delete(route('weddings.events.destroy', [$wedding, $nonPrimary]))
+            ->assertRedirect(route('weddings.events.index', $wedding))
+            ->assertInertiaFlash('toast', ['type' => 'success', 'message' => 'Acara berhasil dihapus.']);
     }
 
     public function test_cross_wedding_nested_event_returns_not_found(): void
