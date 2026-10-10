@@ -29,14 +29,21 @@ class TaskController extends Controller
             ->through(fn (Task $task): array => [
                 'uuid' => $task->uuid,
                 'title' => $task->title,
+                'description' => $task->description,
                 'priority' => $task->priority->value,
                 'startDate' => $task->start_date?->toDateString(),
                 'dueDate' => $task->due_date?->toDateString(),
                 'completedAt' => $task->completed_at?->toIso8601String(),
-                'category' => ['name' => $task->category->name, 'color' => $task->category->color],
-                'status' => ['name' => $task->status->name, 'color' => $task->status->color, 'behavior' => $task->status->behavior->value],
+                'category' => ['uuid' => $task->category->uuid, 'name' => $task->category->name, 'color' => $task->category->color],
+                'status' => ['uuid' => $task->status->uuid, 'name' => $task->status->name, 'color' => $task->status->color, 'behavior' => $task->status->behavior->value],
                 'assignee' => $task->assignee?->user->name,
+                'assigneeMembershipId' => $task->assignee_membership_id,
                 'event' => $task->event?->name,
+                'eventUuid' => $task->event?->uuid,
+                'dateMode' => $task->date_mode->value,
+                'relativeStartOffset' => $task->relative_start_offset,
+                'relativeDueOffset' => $task->relative_due_offset,
+                'notes' => $task->notes,
                 'isOverdue' => $task->due_date?->isBefore(now($wedding->timezone)->startOfDay())
                     && ! in_array($task->status->behavior->value, ['completed', 'cancelled'], true),
             ]);
@@ -59,11 +66,11 @@ class TaskController extends Controller
         ]);
     }
 
-    public function create(Wedding $wedding): Response
+    public function create(Wedding $wedding): RedirectResponse
     {
         abort_unless(request()->user()->can('create', new Task(['wedding_id' => $wedding->id])), 403);
 
-        return Inertia::render('weddings/planning/create', $this->formOptions($wedding));
+        return redirect()->route('weddings.planning.index', $wedding);
     }
 
     public function store(StoreTaskRequest $request, Wedding $wedding, PersistTaskAction $tasks): RedirectResponse
@@ -101,29 +108,11 @@ class TaskController extends Controller
         ]);
     }
 
-    public function edit(Wedding $wedding, Task $task): Response
+    public function edit(Wedding $wedding, Task $task): RedirectResponse
     {
         abort_unless(request()->user()->can('update', $task), 403);
 
-        return Inertia::render('weddings/planning/edit', [
-            ...$this->formOptions($wedding),
-            'task' => [
-                'uuid' => $task->uuid,
-                'title' => $task->title,
-                'description' => $task->description,
-                'categoryUuid' => $task->category->uuid,
-                'statusUuid' => $task->status->uuid,
-                'priority' => $task->priority->value,
-                'assigneeMembershipId' => $task->assignee_membership_id,
-                'eventUuid' => $task->event?->uuid,
-                'dateMode' => $task->date_mode->value,
-                'startDate' => $task->start_date?->toDateString(),
-                'dueDate' => $task->due_date?->toDateString(),
-                'relativeStartOffset' => $task->relative_start_offset,
-                'relativeDueOffset' => $task->relative_due_offset,
-                'notes' => $task->notes,
-            ],
-        ]);
+        return redirect()->route('weddings.planning.index', $wedding);
     }
 
     public function update(UpdateTaskRequest $request, Wedding $wedding, Task $task, PersistTaskAction $tasks): RedirectResponse

@@ -1,10 +1,19 @@
 import { Form, Head, Link, usePage } from '@inertiajs/react';
-import { ChevronDown, Download, Plus, Search, UsersRound } from 'lucide-react';
+import {
+    ChevronDown,
+    Download,
+    Pencil,
+    Plus,
+    Search,
+    UsersRound,
+} from 'lucide-react';
 import { useState } from 'react';
 import GuestController from '@/actions/App/Http/Controllers/Logistics/GuestController';
 import { AttachmentsPanel } from '@/components/attachments-panel';
 import { ConfirmSubmit } from '@/components/confirm-submit';
 import { CustomFieldsPanel } from '@/components/custom-fields-panel';
+import FilterDisclosure from '@/components/filter-disclosure';
+import FormDialog from '@/components/form-dialog';
 import InputError from '@/components/input-error';
 import { exportUrl } from '@/lib/export-url';
 import { Button } from '@/components/ui/button';
@@ -13,6 +22,7 @@ import { Label } from '@/components/ui/label';
 import { index as guestsIndex } from '@/routes/weddings/guests';
 import type { ActiveWedding } from '@/types';
 import { guestSummaryLabel, invitationTone, rsvpTone } from './guest-display';
+import GuestForm, { type GuestValue } from './guest-form';
 
 type GuestRow = {
     uuid: string;
@@ -115,6 +125,7 @@ export default function GuestIndex({
     }>().props;
     const base = guestsIndex(activeWedding.uuid).url;
     const hasCustomFields = customFieldDefinitions.length > 0;
+    const [editing, setEditing] = useState<GuestValue | null>(null);
 
     return (
         <>
@@ -496,104 +507,123 @@ export default function GuestIndex({
                         </section>
                     )}
 
-                    <form
-                        action={base}
-                        method="get"
-                        className="bg-card mt-5 grid gap-4 rounded-2xl border p-5 shadow-sm sm:grid-cols-2 lg:grid-cols-[1fr_auto_auto_auto_auto]"
-                        aria-label="Filter tamu"
+                    <FilterDisclosure
+                        activeCount={
+                            Object.values(filters).filter(
+                                (value) => value && value !== 'all',
+                            ).length
+                        }
                     >
-                        <div className="grid gap-2">
-                            <Label htmlFor="search">Cari nama tamu</Label>
-                            <div className="relative">
-                                <Search
-                                    className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
-                                    aria-hidden="true"
-                                />
-                                <Input
-                                    id="search"
-                                    name="search"
-                                    defaultValue={filters.search}
-                                    placeholder="cth. Wijaya"
-                                    className="pl-9"
-                                />
+                        <form
+                            action={base}
+                            method="get"
+                            className="bg-card grid gap-4 rounded-2xl border p-5 shadow-sm sm:grid-cols-2 lg:grid-cols-[1fr_auto_auto_auto_auto]"
+                            aria-label="Filter tamu"
+                        >
+                            <div className="grid gap-2">
+                                <Label htmlFor="search">Cari nama tamu</Label>
+                                <div className="relative">
+                                    <Search
+                                        className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
+                                        aria-hidden="true"
+                                    />
+                                    <Input
+                                        id="search"
+                                        name="search"
+                                        defaultValue={filters.search}
+                                        placeholder="cth. Wijaya"
+                                        className="pl-9"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="side">Sisi</Label>
-                            <select
-                                id="side"
-                                name="side"
-                                defaultValue={filters.side || 'all'}
-                                className={selectClass}
-                            >
-                                <option value="all">Semua sisi</option>
-                                {sides.map((side) => (
-                                    <option key={side.uuid} value={side.uuid}>
-                                        {side.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="group">Grup</Label>
-                            <select
-                                id="group"
-                                name="group"
-                                defaultValue={filters.group || 'all'}
-                                className={selectClass}
-                            >
-                                <option value="all">Semua grup</option>
-                                {groups.map((group) => (
-                                    <option key={group.uuid} value={group.uuid}>
-                                        {group.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="invitation">Status undangan</Label>
-                            <select
-                                id="invitation"
-                                name="invitation"
-                                defaultValue={filters.invitation || 'all'}
-                                className={selectClass}
-                            >
-                                <option value="all">Semua status</option>
-                                {invitationStatuses.map((status) => (
-                                    <option
-                                        key={status.value}
-                                        value={status.value}
-                                    >
-                                        {status.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="rsvp">Jawaban RSVP</Label>
-                            <select
-                                id="rsvp"
-                                name="rsvp"
-                                defaultValue={filters.rsvp || 'all'}
-                                className={selectClass}
-                            >
-                                <option value="all">Semua jawaban</option>
-                                {rsvpStatuses.map((status) => (
-                                    <option
-                                        key={status.value}
-                                        value={status.value}
-                                    >
-                                        {status.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex items-end sm:col-span-2 lg:col-span-1">
-                            <Button type="submit" className="min-h-11 w-full">
-                                Terapkan filter
-                            </Button>
-                        </div>
-                    </form>
+                            <div className="grid gap-2">
+                                <Label htmlFor="side">Sisi</Label>
+                                <select
+                                    id="side"
+                                    name="side"
+                                    defaultValue={filters.side || 'all'}
+                                    className={selectClass}
+                                >
+                                    <option value="all">Semua sisi</option>
+                                    {sides.map((side) => (
+                                        <option
+                                            key={side.uuid}
+                                            value={side.uuid}
+                                        >
+                                            {side.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="group">Grup</Label>
+                                <select
+                                    id="group"
+                                    name="group"
+                                    defaultValue={filters.group || 'all'}
+                                    className={selectClass}
+                                >
+                                    <option value="all">Semua grup</option>
+                                    {groups.map((group) => (
+                                        <option
+                                            key={group.uuid}
+                                            value={group.uuid}
+                                        >
+                                            {group.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="invitation">
+                                    Status undangan
+                                </Label>
+                                <select
+                                    id="invitation"
+                                    name="invitation"
+                                    defaultValue={filters.invitation || 'all'}
+                                    className={selectClass}
+                                >
+                                    <option value="all">Semua status</option>
+                                    {invitationStatuses.map((status) => (
+                                        <option
+                                            key={status.value}
+                                            value={status.value}
+                                        >
+                                            {status.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="rsvp">Jawaban RSVP</Label>
+                                <select
+                                    id="rsvp"
+                                    name="rsvp"
+                                    defaultValue={filters.rsvp || 'all'}
+                                    className={selectClass}
+                                >
+                                    <option value="all">Semua jawaban</option>
+                                    {rsvpStatuses.map((status) => (
+                                        <option
+                                            key={status.value}
+                                            value={status.value}
+                                        >
+                                            {status.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="flex items-end sm:col-span-2 lg:col-span-1">
+                                <Button
+                                    type="submit"
+                                    className="min-h-11 w-full"
+                                >
+                                    Terapkan filter
+                                </Button>
+                            </div>
+                        </form>
+                    </FilterDisclosure>
 
                     <section className="bg-card mt-5 overflow-hidden rounded-2xl border shadow-sm">
                         <div className="hidden overflow-x-auto md:block">
@@ -627,6 +657,7 @@ export default function GuestIndex({
                                             guest={guest}
                                             weddingUuid={activeWedding.uuid}
                                             canEdit={canEdit}
+                                            onEdit={() => setEditing(guest)}
                                             hasCustomFields={hasCustomFields}
                                             definitions={customFieldDefinitions}
                                             values={
@@ -694,14 +725,30 @@ export default function GuestIndex({
                                         }
                                     />
                                     {canEdit && (
-                                        <ConfirmSubmit
-                                            form={GuestController.destroy.form([
-                                                activeWedding.uuid,
-                                                guest.uuid,
-                                            ])}
-                                            label="hapus tamu"
-                                            context={`tamu ${guest.name}`}
-                                        />
+                                        <div className="mt-3 flex flex-wrap gap-2">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                className="min-h-11"
+                                                onClick={() =>
+                                                    setEditing(guest)
+                                                }
+                                            >
+                                                <Pencil aria-hidden="true" />
+                                                Edit
+                                            </Button>
+                                            <ConfirmSubmit
+                                                form={GuestController.destroy.form(
+                                                    [
+                                                        activeWedding.uuid,
+                                                        guest.uuid,
+                                                    ],
+                                                )}
+                                                label="hapus tamu"
+                                                context={`tamu ${guest.name}`}
+                                            />
+                                        </div>
                                     )}
                                 </article>
                             ))}
@@ -749,6 +796,30 @@ export default function GuestIndex({
                     </nav>
                 </div>
             </main>
+
+            <FormDialog
+                open={editing !== null}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setEditing(null);
+                    }
+                }}
+                title="Edit tamu"
+                description="Perbarui data tamu, sisi, grup, dan status undangan."
+            >
+                {editing && (
+                    <GuestForm
+                        key={editing.uuid}
+                        guest={editing}
+                        sides={sides}
+                        groups={groups}
+                        invitationStatuses={invitationStatuses}
+                        rsvpStatuses={rsvpStatuses}
+                        onCancel={() => setEditing(null)}
+                        onSuccess={() => setEditing(null)}
+                    />
+                )}
+            </FormDialog>
         </>
     );
 }
@@ -763,6 +834,7 @@ function GuestTableRows({
     guest,
     weddingUuid,
     canEdit,
+    onEdit,
     hasCustomFields,
     definitions,
     values,
@@ -771,6 +843,7 @@ function GuestTableRows({
     guest: GuestRow;
     weddingUuid: string;
     canEdit: boolean;
+    onEdit: () => void;
     hasCustomFields: boolean;
     definitions: Parameters<typeof CustomFieldsPanel>[0]['definitions'];
     values: Record<string, unknown>;
@@ -842,14 +915,26 @@ function GuestTableRows({
                 </td>
                 {canEdit && (
                     <td className="px-4 py-3 text-right">
-                        <ConfirmSubmit
-                            form={GuestController.destroy.form([
-                                weddingUuid,
-                                guest.uuid,
-                            ])}
-                            label="hapus"
-                            context={`tamu ${guest.name}`}
-                        />
+                        <div className="flex flex-wrap justify-end gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="min-h-11"
+                                onClick={onEdit}
+                            >
+                                <Pencil aria-hidden="true" />
+                                Edit
+                            </Button>
+                            <ConfirmSubmit
+                                form={GuestController.destroy.form([
+                                    weddingUuid,
+                                    guest.uuid,
+                                ])}
+                                label="hapus"
+                                context={`tamu ${guest.name}`}
+                            />
+                        </div>
                     </td>
                 )}
             </tr>

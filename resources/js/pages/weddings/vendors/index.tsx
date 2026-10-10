@@ -6,6 +6,7 @@ import VendorContactController from '@/actions/App/Http/Controllers/Logistics/Ve
 import VendorController from '@/actions/App/Http/Controllers/Logistics/VendorController';
 import { AttachmentsPanel } from '@/components/attachments-panel';
 import { ConfirmSubmit } from '@/components/confirm-submit';
+import FilterDisclosure from '@/components/filter-disclosure';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -332,72 +333,85 @@ export default function VendorIndex({
                         </section>
                     )}
 
-                    <form
-                        action={base}
-                        method="get"
-                        className="bg-card mt-5 grid gap-4 rounded-2xl border p-5 shadow-sm sm:grid-cols-[1fr_auto_auto_auto]"
-                        aria-label="Filter vendor"
+                    <FilterDisclosure
+                        activeCount={
+                            [
+                                filters.search,
+                                filters.status !== 'all' && filters.status,
+                                filters.category !== 'all' && filters.category,
+                            ].filter(Boolean).length
+                        }
                     >
-                        <div className="grid gap-2">
-                            <Label htmlFor="search">Cari nama vendor</Label>
-                            <div className="relative">
-                                <Search
-                                    className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
-                                    aria-hidden="true"
-                                />
-                                <Input
-                                    id="search"
-                                    name="search"
-                                    defaultValue={filters.search}
-                                    placeholder="cth. Melati"
-                                    className="pl-9"
-                                />
+                        <form
+                            action={base}
+                            method="get"
+                            className="bg-card grid gap-4 rounded-2xl border p-5 shadow-sm sm:grid-cols-[1fr_auto_auto_auto]"
+                            aria-label="Filter vendor"
+                        >
+                            <div className="grid gap-2">
+                                <Label htmlFor="search">Cari nama vendor</Label>
+                                <div className="relative">
+                                    <Search
+                                        className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
+                                        aria-hidden="true"
+                                    />
+                                    <Input
+                                        id="search"
+                                        name="search"
+                                        defaultValue={filters.search}
+                                        placeholder="cth. Melati"
+                                        className="pl-9"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="status">Status</Label>
-                            <select
-                                id="status"
-                                name="status"
-                                defaultValue={filters.status || 'all'}
-                                className="border-input bg-background min-h-11 rounded-md border px-3 text-sm"
-                            >
-                                <option value="all">Semua status</option>
-                                {statuses.map((status) => (
-                                    <option
-                                        key={status.value}
-                                        value={status.value}
-                                    >
-                                        {status.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="category">Kategori</Label>
-                            <select
-                                id="category"
-                                name="category"
-                                defaultValue={filters.category || 'all'}
-                                className="border-input bg-background min-h-11 rounded-md border px-3 text-sm"
-                            >
-                                <option value="all">Semua kategori</option>
-                                {categories.map((category) => (
-                                    <option
-                                        key={category.uuid}
-                                        value={category.uuid}
-                                    >
-                                        {category.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex items-end">
-                            <Button type="submit" className="min-h-11 w-full">
-                                Terapkan filter
-                            </Button>
-                        </div>
-                    </form>
+                            <div className="grid gap-2">
+                                <Label htmlFor="status">Status</Label>
+                                <select
+                                    id="status"
+                                    name="status"
+                                    defaultValue={filters.status || 'all'}
+                                    className="border-input bg-background min-h-11 rounded-md border px-3 text-sm"
+                                >
+                                    <option value="all">Semua status</option>
+                                    {statuses.map((status) => (
+                                        <option
+                                            key={status.value}
+                                            value={status.value}
+                                        >
+                                            {status.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="category">Kategori</Label>
+                                <select
+                                    id="category"
+                                    name="category"
+                                    defaultValue={filters.category || 'all'}
+                                    className="border-input bg-background min-h-11 rounded-md border px-3 text-sm"
+                                >
+                                    <option value="all">Semua kategori</option>
+                                    {categories.map((category) => (
+                                        <option
+                                            key={category.uuid}
+                                            value={category.uuid}
+                                        >
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="flex items-end">
+                                <Button
+                                    type="submit"
+                                    className="min-h-11 w-full"
+                                >
+                                    Terapkan filter
+                                </Button>
+                            </div>
+                        </form>
+                    </FilterDisclosure>
 
                     <section className="bg-card mt-5 overflow-hidden rounded-2xl border shadow-sm">
                         <div className="hidden overflow-x-auto md:block">

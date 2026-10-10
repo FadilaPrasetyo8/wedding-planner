@@ -1,6 +1,8 @@
-import { Head, Link, usePage } from '@inertiajs/react';
-import { AlertTriangle, Download, Plus } from 'lucide-react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import { AlertTriangle, Download, Pencil, Plus, Trash2 } from 'lucide-react';
 import TaskController from '@/actions/App/Http/Controllers/Weddings/TaskController';
+import FormDialog from '@/components/form-dialog';
 import { Button } from '@/components/ui/button';
 import { exportUrl } from '@/lib/export-url';
 import { SectionTabs } from '@/components/section-tabs';
@@ -9,21 +11,51 @@ import {
     timeline as planningTimeline,
     configuration as planningConfiguration,
 } from '@/routes/weddings/planning';
+import FilterDisclosure from '@/components/filter-disclosure';
 import PlanningFiltersForm from './planning-filters';
+import TaskForm, { type TaskValue } from './task-form';
 import type { ActiveWedding } from '@/types';
 
 type TaskRow = {
     uuid: string;
     title: string;
+    description: string | null;
     priority: string;
     startDate: string | null;
     dueDate: string | null;
-    category: { name: string };
-    status: { name: string; behavior: string };
+    category: { uuid: string; name: string };
+    status: { uuid: string; name: string; behavior: string };
     assignee: string | null;
+    assigneeMembershipId: number | null;
     event: string | null;
+    eventUuid: string | null;
+    dateMode: string;
+    relativeStartOffset: number | null;
+    relativeDueOffset: number | null;
+    notes: string | null;
     isOverdue: boolean;
 };
+
+type ModalState = { mode: 'create' } | { mode: 'edit'; task: TaskValue } | null;
+
+function toTaskValue(task: TaskRow): TaskValue {
+    return {
+        uuid: task.uuid,
+        title: task.title,
+        description: task.description,
+        categoryUuid: task.category.uuid,
+        statusUuid: task.status.uuid,
+        priority: task.priority,
+        assigneeMembershipId: task.assigneeMembershipId,
+        eventUuid: task.eventUuid,
+        dateMode: task.dateMode,
+        startDate: task.startDate,
+        dueDate: task.dueDate,
+        relativeStartOffset: task.relativeStartOffset,
+        relativeDueOffset: task.relativeDueOffset,
+        notes: task.notes,
+    };
+}
 type PageData = {
     data: TaskRow[];
     links: { url: string | null; label: string; active: boolean }[];
@@ -53,6 +85,16 @@ export default function PlanningIndex({
 }) {
     const { activeWedding } = usePage<{ activeWedding: ActiveWedding }>().props;
     const planningUrl = `/weddings/${activeWedding.uuid}/planning`;
+    const [modal, setModal] = useState<ModalState>(() => {
+        const editUuid = new URLSearchParams(window.location.search).get(
+            'edit',
+        );
+        const target = tasks.data.find((task) => task.uuid === editUuid);
+
+        return canEdit && target
+            ? { mode: 'edit', task: toTaskValue(target) }
+            : null;
+    });
 
     return (
         <>
@@ -91,15 +133,12 @@ export default function PlanningIndex({
                                 </Button>
                             )}
                             {canEdit ? (
-                                <Button asChild className="min-h-11">
-                                    <Link
-                                        href={TaskController.create.url(
-                                            activeWedding.uuid,
-                                        )}
-                                    >
-                                        <Plus aria-hidden="true" />
-                                        Tambah tugas
-                                    </Link>
+                                <Button
+                                    className="min-h-11"
+                                    onClick={() => setModal({ mode: 'create' })}
+                                >
+                                    <Plus aria-hidden="true" />
+                                    Tambah tugas
                                 </Button>
                             ) : (
                                 <span className="bg-muted rounded-full px-4 py-3 text-sm">
@@ -126,14 +165,28 @@ export default function PlanningIndex({
                             },
                         ]}
                     />
-                    <PlanningFiltersForm
-                        action={planningUrl}
-                        filters={filters}
-                        categories={categories}
-                        statuses={statuses}
-                        assignees={assignees}
-                        events={events}
-                    />
+                    <FilterDisclosure
+                        activeCount={
+                            Object.entries(filters).filter(
+                                ([key, value]) =>
+                                    key !== 'sort' &&
+                                    key !== 'direction' &&
+                                    value !== '' &&
+                                    value !== false &&
+                                    value !== null &&
+                                    value !== undefined,
+                            ).length
+                        }
+                    >
+                        <PlanningFiltersForm
+                            action={planningUrl}
+                            filters={filters}
+                            categories={categories}
+                            statuses={statuses}
+                            assignees={assignees}
+                            events={events}
+                        />
+                    </FilterDisclosure>
                     <section className="bg-card mt-5 overflow-hidden rounded-2xl border shadow-sm">
                         <div className="hidden overflow-x-auto md:block">
                             <table className="w-full min-w-[850px] text-sm">
@@ -146,6 +199,13 @@ export default function PlanningIndex({
                                         <th className="px-4 py-3">
                                             Penanggung jawab
                                         </th>
+                                        {canEdit && (
+                                            <th className="px-4 py-3">
+                                                <span className="sr-only">
+                                                    Aksi
+                                                </span>
+                                            </th>
+                                        )}
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y">
@@ -183,6 +243,26 @@ export default function PlanningIndex({
                                                 {task.assignee ??
                                                     'Belum ditugaskan'}
                                             </td>
+                                            {canEdit && (
+                                                <td className="px-4 py-3 text-right">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="min-h-11"
+                                                        onClick={() =>
+                                                            setModal({
+                                                                mode: 'edit',
+                                                                task: toTaskValue(
+                                                                    task,
+                                                                ),
+                                                            })
+                                                        }
+                                                    >
+                                                        <Pencil aria-hidden="true" />
+                                                        Edit
+                                                    </Button>
+                                                </td>
+                                            )}
                                         </tr>
                                     ))}
                                 </tbody>
@@ -209,6 +289,22 @@ export default function PlanningIndex({
                                         {task.dueDate ?? 'belum ditentukan'}
                                         {task.isOverdue ? ' · Terlambat' : ''}
                                     </p>
+                                    {canEdit && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="mt-3 min-h-11"
+                                            onClick={() =>
+                                                setModal({
+                                                    mode: 'edit',
+                                                    task: toTaskValue(task),
+                                                })
+                                            }
+                                        >
+                                            <Pencil aria-hidden="true" />
+                                            Edit
+                                        </Button>
+                                    )}
                                 </article>
                             ))}
                         </div>
@@ -249,6 +345,111 @@ export default function PlanningIndex({
                     </nav>
                 </div>
             </main>
+
+            <FormDialog
+                open={modal !== null}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setModal(null);
+                    }
+                }}
+                title={modal?.mode === 'edit' ? 'Edit tugas' : 'Tambah tugas'}
+                description={
+                    modal?.mode === 'edit'
+                        ? 'Perbarui detail tugas tanpa meninggalkan daftar.'
+                        : 'Catat pekerjaan, tenggat, dan penanggung jawabnya.'
+                }
+            >
+                {modal && (
+                    <>
+                        <TaskForm
+                            key={
+                                modal.mode === 'edit'
+                                    ? modal.task.uuid
+                                    : 'create'
+                            }
+                            task={
+                                modal.mode === 'edit' ? modal.task : undefined
+                            }
+                            categories={categories}
+                            statuses={statuses}
+                            assignees={assignees}
+                            events={events}
+                            onCancel={() => setModal(null)}
+                            onSuccess={() => setModal(null)}
+                        />
+                        {modal.mode === 'edit' && (
+                            <DeleteTaskButton
+                                task={modal.task}
+                                onDeleted={() => setModal(null)}
+                            />
+                        )}
+                    </>
+                )}
+            </FormDialog>
         </>
+    );
+}
+
+function DeleteTaskButton({
+    task,
+    onDeleted,
+}: {
+    task: TaskValue;
+    onDeleted: () => void;
+}) {
+    const { activeWedding } = usePage<{ activeWedding: ActiveWedding }>().props;
+    const [confirming, setConfirming] = useState(false);
+    const [processing, setProcessing] = useState(false);
+
+    const remove = () => {
+        setProcessing(true);
+        router.delete(
+            TaskController.destroy.url([activeWedding.uuid, task.uuid]),
+            {
+                onSuccess: onDeleted,
+                onFinish: () => setProcessing(false),
+            },
+        );
+    };
+
+    return confirming ? (
+        <div
+            role="group"
+            aria-label="Konfirmasi hapus tugas"
+            className="flex flex-wrap items-center gap-2 border-t pt-4"
+        >
+            <span className="text-sm">Hapus tugas ini?</span>
+            <Button
+                type="button"
+                variant="destructive"
+                className="min-h-11"
+                disabled={processing}
+                onClick={remove}
+            >
+                Yakin, hapus
+            </Button>
+            <Button
+                type="button"
+                variant="outline"
+                className="min-h-11"
+                disabled={processing}
+                onClick={() => setConfirming(false)}
+            >
+                Batal
+            </Button>
+        </div>
+    ) : (
+        <div className="border-t pt-4">
+            <Button
+                type="button"
+                variant="destructive"
+                className="min-h-11"
+                onClick={() => setConfirming(true)}
+            >
+                <Trash2 aria-hidden="true" />
+                Hapus tugas
+            </Button>
+        </div>
     );
 }

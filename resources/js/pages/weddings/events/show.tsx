@@ -80,10 +80,7 @@ export default function EventShow({
                             {canEdit ? (
                                 <Button asChild className="min-h-11">
                                     <Link
-                                        href={WeddingEventController.edit.url([
-                                            activeWedding.uuid,
-                                            event.uuid,
-                                        ])}
+                                        href={`${WeddingEventController.index.url(activeWedding.uuid)}?edit=${event.uuid}`}
                                     >
                                         <Pencil aria-hidden="true" />
                                         Edit acara

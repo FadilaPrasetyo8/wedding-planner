@@ -159,6 +159,31 @@ class ChecklistTest extends TestCase
             ])->assertRedirect()->assertSessionHasErrors('checklist_category_uuid');
     }
 
+    public function test_overdue_administration_item_stops_being_overdue_when_marked_done(): void
+    {
+        $item = $this->item('administration', [
+            'deadline' => now()->subDays(3)->toDateString(),
+        ]);
+        $this->assertTrue($item->fresh()->isOverdue(), 'Precondition: item must be overdue.');
+
+        $doneStatus = $this->wedding->checklistStatuses()
+            ->where('type', 'administration')->where('is_completed', true)->firstOrFail();
+
+        $this->actingAs($this->editor)
+            ->patch(route('weddings.checklist-items.update', [
+                'wedding' => $this->wedding, 'type' => 'administration', 'checklist_item' => $item,
+            ]), [
+                'name' => $item->name,
+                'quantity' => $item->quantity,
+                'deadline' => $item->deadline->toDateString(),
+                'checklist_status_uuid' => $doneStatus->uuid,
+            ])->assertRedirect()->assertSessionHas('success');
+
+        $item->refresh();
+        $this->assertNotNull($item->completed_at, 'Completing an item must stamp completed_at.');
+        $this->assertFalse($item->isOverdue(), 'A completed item must no longer be overdue.');
+    }
+
     public function test_first_completion_stamps_completed_at_and_retains_it(): void
     {
         $item = $this->item('seserahan');

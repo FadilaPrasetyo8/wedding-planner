@@ -81,7 +81,7 @@ export default function TaskShow({
                             </Button>
                             {canEdit ? (
                                 <Button asChild className="min-h-11">
-                                    <Link href={`${base}/${task.uuid}/edit`}>
+                                    <Link href={`${base}?edit=${task.uuid}`}>
                                         <Pencil aria-hidden="true" />
                                         Edit tugas
                                     </Link>

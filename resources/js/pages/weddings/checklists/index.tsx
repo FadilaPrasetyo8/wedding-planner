@@ -4,6 +4,7 @@ import {
     ChevronDown,
     Clock,
     Download,
+    Pencil,
     Plus,
     Search,
 } from 'lucide-react';
@@ -11,7 +12,9 @@ import { useState } from 'react';
 import ChecklistController from '@/actions/App/Http/Controllers/Logistics/ChecklistController';
 import { AttachmentsPanel } from '@/components/attachments-panel';
 import { ConfirmSubmit } from '@/components/confirm-submit';
+import FilterDisclosure from '@/components/filter-disclosure';
 import { CustomFieldsPanel } from '@/components/custom-fields-panel';
+import FormDialog from '@/components/form-dialog';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +24,7 @@ import { exportUrl } from '@/lib/export-url';
 import { formatDate, formatRupiah } from '@/lib/format';
 import { index as checklistsIndex } from '@/routes/weddings/checklists';
 import type { ActiveWedding } from '@/types';
+import ChecklistItemForm, { type ChecklistItemValue } from './item-form';
 import {
     checklistProgressLabel,
     checklistRowTone,
@@ -111,6 +115,8 @@ export default function ChecklistIndex({
     const base = checklistsIndex([activeWedding.uuid, type]).url;
     const isSeserahan = type === 'seserahan';
     const hasCustomFields = customFieldDefinitions.length > 0;
+    const [editing, setEditing] = useState<ChecklistItemValue | null>(null);
+    const [creating, setCreating] = useState(false);
 
     return (
         <>
@@ -201,221 +207,15 @@ export default function ChecklistIndex({
                     )}
 
                     {canEdit && (
-                        <section
-                            aria-label={`Tambah item ${typeLabel}`}
-                            className="bg-card mt-5 rounded-2xl border p-5 shadow-sm"
-                        >
-                            <h2 className="font-semibold">
-                                Item {typeLabel.toLowerCase()} baru
-                            </h2>
-                            <Form
-                                {...ChecklistController.store.form([
-                                    activeWedding.uuid,
-                                    type,
-                                ])}
-                                className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+                        <div className="mt-5 flex justify-end">
+                            <Button
+                                className="min-h-11"
+                                onClick={() => setCreating(true)}
                             >
-                                {({ processing, errors }) => (
-                                    <>
-                                        <div className="grid gap-2 sm:col-span-2">
-                                            <Label htmlFor="name">
-                                                Nama item
-                                            </Label>
-                                            <Input
-                                                id="name"
-                                                name="name"
-                                                placeholder={
-                                                    isSeserahan
-                                                        ? 'cth. Kalung emas'
-                                                        : 'cth. Surat nikah'
-                                                }
-                                                required
-                                            />
-                                            <InputError message={errors.name} />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="quantity">
-                                                Jumlah
-                                            </Label>
-                                            <Input
-                                                id="quantity"
-                                                name="quantity"
-                                                type="number"
-                                                min={1}
-                                                defaultValue={1}
-                                                required
-                                            />
-                                            <InputError
-                                                message={errors.quantity}
-                                            />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="deadline">
-                                                Tenggat
-                                            </Label>
-                                            <Input
-                                                id="deadline"
-                                                name="deadline"
-                                                type="date"
-                                            />
-                                            <InputError
-                                                message={errors.deadline}
-                                            />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="estimated_cost">
-                                                Estimasi satuan (rupiah)
-                                            </Label>
-                                            <Input
-                                                id="estimated_cost"
-                                                name="estimated_cost"
-                                                type="number"
-                                                min={0}
-                                            />
-                                            <InputError
-                                                message={errors.estimated_cost}
-                                            />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="actual_cost">
-                                                Harga aktual satuan (rupiah)
-                                            </Label>
-                                            <Input
-                                                id="actual_cost"
-                                                name="actual_cost"
-                                                type="number"
-                                                min={0}
-                                            />
-                                            <InputError
-                                                message={errors.actual_cost}
-                                            />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="checklist_category_uuid">
-                                                Kategori
-                                            </Label>
-                                            <select
-                                                id="checklist_category_uuid"
-                                                name="checklist_category_uuid"
-                                                defaultValue=""
-                                                className="border-input bg-background min-h-11 rounded-md border px-3 text-sm"
-                                            >
-                                                <option value="">
-                                                    Tanpa kategori
-                                                </option>
-                                                {categories.map((category) => (
-                                                    <option
-                                                        key={category.uuid}
-                                                        value={category.uuid}
-                                                    >
-                                                        {category.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <InputError
-                                                message={
-                                                    errors.checklist_category_uuid
-                                                }
-                                            />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="checklist_status_uuid">
-                                                Status
-                                            </Label>
-                                            <select
-                                                id="checklist_status_uuid"
-                                                name="checklist_status_uuid"
-                                                defaultValue=""
-                                                className="border-input bg-background min-h-11 rounded-md border px-3 text-sm"
-                                            >
-                                                <option value="">
-                                                    Tanpa status
-                                                </option>
-                                                {statuses.map((status) => (
-                                                    <option
-                                                        key={status.uuid}
-                                                        value={status.uuid}
-                                                    >
-                                                        {status.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <InputError
-                                                message={
-                                                    errors.checklist_status_uuid
-                                                }
-                                            />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="assignee_member_id">
-                                                Penanggung jawab
-                                            </Label>
-                                            <select
-                                                id="assignee_member_id"
-                                                name="assignee_member_id"
-                                                defaultValue=""
-                                                className="border-input bg-background min-h-11 rounded-md border px-3 text-sm"
-                                            >
-                                                <option value="">
-                                                    Belum ditugaskan
-                                                </option>
-                                                {members.map((member) => (
-                                                    <option
-                                                        key={member.id}
-                                                        value={member.id}
-                                                    >
-                                                        {member.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <InputError
-                                                message={
-                                                    errors.assignee_member_id
-                                                }
-                                            />
-                                        </div>
-                                        {isSeserahan && (
-                                            <div className="grid gap-2">
-                                                <Label htmlFor="purchase_url">
-                                                    Tautan pembelian
-                                                </Label>
-                                                <Input
-                                                    id="purchase_url"
-                                                    name="purchase_url"
-                                                    type="url"
-                                                    placeholder="https://"
-                                                />
-                                                <InputError
-                                                    message={
-                                                        errors.purchase_url
-                                                    }
-                                                />
-                                            </div>
-                                        )}
-                                        <div className="grid gap-2 sm:col-span-2">
-                                            <Label htmlFor="notes">
-                                                Catatan
-                                            </Label>
-                                            <Input id="notes" name="notes" />
-                                            <InputError
-                                                message={errors.notes}
-                                            />
-                                        </div>
-                                        <div className="flex items-end sm:col-span-2 sm:justify-self-end">
-                                            <Button
-                                                disabled={processing}
-                                                className="min-h-11 sm:w-auto"
-                                            >
-                                                <Plus aria-hidden="true" />
-                                                {processing
-                                                    ? 'Menambah…'
-                                                    : 'Tambah item'}
-                                            </Button>
-                                        </div>
-                                    </>
-                                )}
-                            </Form>
-                        </section>
+                                <Plus aria-hidden="true" />
+                                Tambah item {typeLabel.toLowerCase()}
+                            </Button>
+                        </div>
                     )}
 
                     {canEdit && (
@@ -586,72 +386,85 @@ export default function ChecklistIndex({
                         </section>
                     )}
 
-                    <form
-                        action={base}
-                        method="get"
-                        className="bg-card mt-5 grid gap-4 rounded-2xl border p-5 shadow-sm sm:grid-cols-[1fr_auto_auto_auto]"
-                        aria-label={`Filter ${typeLabel}`}
+                    <FilterDisclosure
+                        activeCount={
+                            [
+                                filters.search,
+                                filters.status,
+                                filters.category,
+                            ].filter((value) => value && value !== 'all').length
+                        }
                     >
-                        <div className="grid gap-2">
-                            <Label htmlFor="search">Cari nama item</Label>
-                            <div className="relative">
-                                <Search
-                                    className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
-                                    aria-hidden="true"
-                                />
-                                <Input
-                                    id="search"
-                                    name="search"
-                                    defaultValue={filters.search}
-                                    placeholder="cth. Kalung"
-                                    className="pl-9"
-                                />
+                        <form
+                            action={base}
+                            method="get"
+                            className="bg-card grid gap-4 rounded-2xl border p-5 shadow-sm sm:grid-cols-[1fr_auto_auto_auto]"
+                            aria-label={`Filter ${typeLabel}`}
+                        >
+                            <div className="grid gap-2">
+                                <Label htmlFor="search">Cari nama item</Label>
+                                <div className="relative">
+                                    <Search
+                                        className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
+                                        aria-hidden="true"
+                                    />
+                                    <Input
+                                        id="search"
+                                        name="search"
+                                        defaultValue={filters.search}
+                                        placeholder="cth. Kalung"
+                                        className="pl-9"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="status">Status</Label>
-                            <select
-                                id="status"
-                                name="status"
-                                defaultValue={filters.status || ''}
-                                className="border-input bg-background min-h-11 rounded-md border px-3 text-sm"
-                            >
-                                <option value="">Semua status</option>
-                                {statuses.map((status) => (
-                                    <option
-                                        key={status.uuid}
-                                        value={status.uuid}
-                                    >
-                                        {status.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="category">Kategori</Label>
-                            <select
-                                id="category"
-                                name="category"
-                                defaultValue={filters.category || ''}
-                                className="border-input bg-background min-h-11 rounded-md border px-3 text-sm"
-                            >
-                                <option value="">Semua kategori</option>
-                                {categories.map((category) => (
-                                    <option
-                                        key={category.uuid}
-                                        value={category.uuid}
-                                    >
-                                        {category.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex items-end">
-                            <Button type="submit" className="min-h-11 w-full">
-                                Terapkan filter
-                            </Button>
-                        </div>
-                    </form>
+                            <div className="grid gap-2">
+                                <Label htmlFor="status">Status</Label>
+                                <select
+                                    id="status"
+                                    name="status"
+                                    defaultValue={filters.status || ''}
+                                    className="border-input bg-background min-h-11 rounded-md border px-3 text-sm"
+                                >
+                                    <option value="">Semua status</option>
+                                    {statuses.map((status) => (
+                                        <option
+                                            key={status.uuid}
+                                            value={status.uuid}
+                                        >
+                                            {status.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="category">Kategori</Label>
+                                <select
+                                    id="category"
+                                    name="category"
+                                    defaultValue={filters.category || ''}
+                                    className="border-input bg-background min-h-11 rounded-md border px-3 text-sm"
+                                >
+                                    <option value="">Semua kategori</option>
+                                    {categories.map((category) => (
+                                        <option
+                                            key={category.uuid}
+                                            value={category.uuid}
+                                        >
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="flex items-end">
+                                <Button
+                                    type="submit"
+                                    className="min-h-11 w-full"
+                                >
+                                    Terapkan filter
+                                </Button>
+                            </div>
+                        </form>
+                    </FilterDisclosure>
 
                     <section className="bg-card mt-5 overflow-hidden rounded-2xl border shadow-sm">
                         <div className="hidden overflow-x-auto md:block">
@@ -690,6 +503,9 @@ export default function ChecklistIndex({
                                             weddingUuid={activeWedding.uuid}
                                             statuses={statuses}
                                             canEdit={canEdit}
+                                            onEdit={() =>
+                                                setEditing(toItemValue(item))
+                                            }
                                             hasCustomFields={hasCustomFields}
                                             definitions={customFieldDefinitions}
                                             values={
@@ -761,17 +577,32 @@ export default function ChecklistIndex({
                                         }
                                     />
                                     {canEdit && (
-                                        <ConfirmSubmit
-                                            form={ChecklistController.destroy.form(
-                                                [
-                                                    activeWedding.uuid,
-                                                    type,
-                                                    item.uuid,
-                                                ],
-                                            )}
-                                            label="hapus item"
-                                            context={`item ${item.name}`}
-                                        />
+                                        <div className="mt-3 flex flex-wrap gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="min-h-11"
+                                                onClick={() =>
+                                                    setEditing(
+                                                        toItemValue(item),
+                                                    )
+                                                }
+                                            >
+                                                <Pencil aria-hidden="true" />
+                                                Edit
+                                            </Button>
+                                            <ConfirmSubmit
+                                                form={ChecklistController.destroy.form(
+                                                    [
+                                                        activeWedding.uuid,
+                                                        type,
+                                                        item.uuid,
+                                                    ],
+                                                )}
+                                                label="hapus item"
+                                                context={`item ${item.name}`}
+                                            />
+                                        </div>
                                     )}
                                 </article>
                             ))}
@@ -820,8 +651,67 @@ export default function ChecklistIndex({
                     </nav>
                 </div>
             </main>
+
+            <FormDialog
+                open={creating}
+                onOpenChange={setCreating}
+                title={`Tambah item ${typeLabel.toLowerCase()}`}
+                description="Catat item baru beserta tenggat dan penanggung jawabnya."
+            >
+                <ChecklistItemForm
+                    type={type}
+                    isSeserahan={isSeserahan}
+                    categories={categories}
+                    statuses={statuses}
+                    members={members}
+                    onCancel={() => setCreating(false)}
+                    onSuccess={() => setCreating(false)}
+                />
+            </FormDialog>
+
+            <FormDialog
+                open={editing !== null}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setEditing(null);
+                    }
+                }}
+                title="Edit item"
+                description={`Perbarui detail item ${typeLabel.toLowerCase()}.`}
+            >
+                {editing && (
+                    <ChecklistItemForm
+                        key={editing.uuid}
+                        item={editing}
+                        type={type}
+                        isSeserahan={isSeserahan}
+                        categories={categories}
+                        statuses={statuses}
+                        members={members}
+                        onCancel={() => setEditing(null)}
+                        onSuccess={() => setEditing(null)}
+                    />
+                )}
+            </FormDialog>
         </>
     );
+}
+
+function toItemValue(item: ChecklistItemRow): ChecklistItemValue {
+    return {
+        uuid: item.uuid,
+        name: item.name,
+        quantity: item.quantity,
+        estimatedCost: item.estimatedCost,
+        actualCost: item.actualCost,
+        deadline: item.deadline,
+        purchaseUrl: item.purchaseUrl,
+        notes: item.notes,
+        groupUuid: item.groupUuid,
+        categoryUuid: item.categoryUuid,
+        statusUuid: item.statusUuid,
+        assigneeMemberId: item.assigneeMemberId,
+    };
 }
 
 function ItemStatusForm({
@@ -898,11 +788,13 @@ function ItemStatusForm({
                         name="checklist_group_uuid"
                         value={item.groupUuid ?? ''}
                     />
-                    <input
-                        type="hidden"
-                        name="purchase_url"
-                        value={item.purchaseUrl ?? ''}
-                    />
+                    {type === 'seserahan' && (
+                        <input
+                            type="hidden"
+                            name="purchase_url"
+                            value={item.purchaseUrl ?? ''}
+                        />
+                    )}
                     <input
                         type="hidden"
                         name="assignee_member_id"
@@ -941,6 +833,7 @@ function ItemTableRows({
     weddingUuid,
     statuses,
     canEdit,
+    onEdit,
     hasCustomFields,
     definitions,
     values,
@@ -951,6 +844,7 @@ function ItemTableRows({
     weddingUuid: string;
     statuses: StatusOption[];
     canEdit: boolean;
+    onEdit: () => void;
     hasCustomFields: boolean;
     definitions: Parameters<typeof CustomFieldsPanel>[0]['definitions'];
     values: Record<string, unknown>;
@@ -1022,15 +916,26 @@ function ItemTableRows({
                 <td className="px-4 py-3">{formatDate(item.deadline)}</td>
                 {canEdit && (
                     <td className="px-4 py-3 text-right">
-                        <ConfirmSubmit
-                            form={ChecklistController.destroy.form([
-                                weddingUuid,
-                                type,
-                                item.uuid,
-                            ])}
-                            label="hapus"
-                            context={`item ${item.name}`}
-                        />
+                        <div className="flex justify-end gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="min-h-11"
+                                onClick={onEdit}
+                            >
+                                <Pencil aria-hidden="true" />
+                                Edit
+                            </Button>
+                            <ConfirmSubmit
+                                form={ChecklistController.destroy.form([
+                                    weddingUuid,
+                                    type,
+                                    item.uuid,
+                                ])}
+                                label="hapus"
+                                context={`item ${item.name}`}
+                            />
+                        </div>
                     </td>
                 )}
             </tr>
