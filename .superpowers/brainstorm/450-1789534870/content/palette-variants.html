@@ -1,0 +1,323 @@
+<h2>Varian palet lebih hangat &amp; romantis — pilih yang paling terasa</h2>
+<p class="subtitle">
+    Klik varian yang kamu suka. Ini pengganti palet "Bright Romantic" yang
+    sekarang. Setiap mockup memakai warna asli kandidatnya.
+</p>
+
+<style>
+    .pv-mock {
+        font-family: system-ui, sans-serif;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        text-align: left;
+    }
+    .pv-mock .topbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .pv-mock .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 99px;
+    }
+    .pv-body {
+        display: flex;
+        min-height: 190px;
+    }
+    .pv-side {
+        width: 118px;
+        padding: 10px 8px;
+        font-size: 10.5px;
+        line-height: 1.9;
+    }
+    .pv-side .lbl {
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 8.5px;
+        opacity: 0.55;
+        margin-top: 8px;
+    }
+    .pv-side .it {
+        padding: 3px 7px;
+        border-radius: 7px;
+    }
+    .pv-main {
+        flex: 1;
+        padding: 14px;
+    }
+    .pv-title {
+        font-family: Georgia, serif;
+        font-size: 17px;
+        font-weight: 600;
+    }
+    .pv-kicker {
+        font-size: 8.5px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+    .pv-cards {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+    }
+    .pv-card {
+        flex: 1;
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 9px;
+    }
+    .pv-num {
+        font-size: 15px;
+        font-weight: 700;
+        margin-top: 3px;
+        font-variant-numeric: tabular-nums;
+    }
+    .pv-btn {
+        display: inline-block;
+        margin-top: 14px;
+        padding: 7px 16px;
+        border-radius: 9px;
+        font-size: 10.5px;
+        font-weight: 600;
+    }
+    .pv-btn.o {
+        border: 1.5px solid rgba(0, 0, 0, 0.14);
+        background: transparent;
+        margin-left: 6px;
+    }
+</style>
+
+<div class="cards">
+    <div class="card" data-choice="rosewater" onclick="toggleSelect(this)">
+        <div class="card-image" style="padding: 0">
+            <div class="pv-mock" style="background: #fff7f5; color: #6a3b4a">
+                <div class="topbar" style="background: #fff0ec">
+                    <span class="dot" style="background: #d95d78"></span>
+                    Wedding Planner
+                </div>
+                <div class="pv-body">
+                    <div class="pv-side" style="background: #ffeee9">
+                        <div class="lbl">Utama</div>
+                        <div
+                            class="it"
+                            style="background: #fdd9d2; color: #b8445f"
+                        >
+                            Ringkasan
+                        </div>
+                        <div class="it">Rencana tugas</div>
+                        <div class="it">Acara</div>
+                        <div class="lbl">Keuangan</div>
+                        <div class="it">Anggaran</div>
+                    </div>
+                    <div class="pv-main">
+                        <div class="pv-kicker" style="color: #d95d78">
+                            Ruang pernikahan
+                        </div>
+                        <div class="pv-title">Alya &amp; Bagas</div>
+                        <div class="pv-cards">
+                            <div
+                                class="pv-card"
+                                style="
+                                    background: #fff;
+                                    border: 1px solid #f7ddd6;
+                                "
+                            >
+                                <div style="opacity: 0.6">Estimasi</div>
+                                <div class="pv-num">Rp 185 jt</div>
+                            </div>
+                            <div
+                                class="pv-card"
+                                style="
+                                    background: #fff;
+                                    border: 1px solid #f7ddd6;
+                                "
+                            >
+                                <div style="opacity: 0.6">Dibayar</div>
+                                <div class="pv-num">Rp 62 jt</div>
+                            </div>
+                        </div>
+                        <span
+                            class="pv-btn"
+                            style="background: #d95d78; color: #fff"
+                            >Tambah item</span
+                        >
+                        <span class="pv-btn o" style="color: #6a3b4a"
+                            >Lihat anggaran</span
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <h3>A — Rosewater Blush</h3>
+            <p>
+                Pink romantis lembut, paling "wedding". Primary rose hangat
+                #d95d78, permukaan blush lembut. Feminin dan manis.
+            </p>
+        </div>
+    </div>
+
+    <div class="card" data-choice="sunset" onclick="toggleSelect(this)">
+        <div class="card-image" style="padding: 0">
+            <div class="pv-mock" style="background: #fffaf0; color: #5c4433">
+                <div class="topbar" style="background: #ffefdc">
+                    <span class="dot" style="background: #e2795b"></span>
+                    Wedding Planner
+                </div>
+                <div class="pv-body">
+                    <div class="pv-side" style="background: #ffeeda">
+                        <div class="lbl">Utama</div>
+                        <div
+                            class="it"
+                            style="background: #ffdcc6; color: #c05a39"
+                        >
+                            Ringkasan
+                        </div>
+                        <div class="it">Rencana tugas</div>
+                        <div class="it">Acara</div>
+                        <div class="lbl">Keuangan</div>
+                        <div class="it">Anggaran</div>
+                    </div>
+                    <div class="pv-main">
+                        <div class="pv-kicker" style="color: #e2795b">
+                            Ruang pernikahan
+                        </div>
+                        <div class="pv-title">Alya &amp; Bagas</div>
+                        <div class="pv-cards">
+                            <div
+                                class="pv-card"
+                                style="
+                                    background: #fff;
+                                    border: 1px solid #f6e2cc;
+                                "
+                            >
+                                <div style="opacity: 0.6">Estimasi</div>
+                                <div class="pv-num">Rp 185 jt</div>
+                            </div>
+                            <div
+                                class="pv-card"
+                                style="
+                                    background: #fff;
+                                    border: 1px solid #f6e2cc;
+                                "
+                            >
+                                <div style="opacity: 0.6">Dibayar</div>
+                                <div class="pv-num">Rp 62 jt</div>
+                            </div>
+                        </div>
+                        <span
+                            class="pv-btn"
+                            style="background: #e2795b; color: #fff"
+                            >Tambah item</span
+                        >
+                        <span class="pv-btn o" style="color: #5c4433"
+                            >Lihat anggaran</span
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <h3>B — Warm Sunset</h3>
+            <p>
+                Peach-terracotta hangat seperti senja. Primary coral-peach
+                #e2795b, krem keemasan. Hangat, ceria, modern.
+            </p>
+        </div>
+    </div>
+
+    <div class="card" data-choice="orchid" onclick="toggleSelect(this)">
+        <div class="card-image" style="padding: 0">
+            <div class="pv-mock" style="background: #fdf6fa; color: #574061">
+                <div class="topbar" style="background: #f6e8f3">
+                    <span class="dot" style="background: #c05b9a"></span>
+                    Wedding Planner
+                </div>
+                <div class="pv-body">
+                    <div class="pv-side" style="background: #f5e6f2">
+                        <div class="lbl">Utama</div>
+                        <div
+                            class="it"
+                            style="background: #eccdf0; color: #a03d80"
+                        >
+                            Ringkasan
+                        </div>
+                        <div class="it">Rencana tugas</div>
+                        <div class="it">Acara</div>
+                        <div class="lbl">Keuangan</div>
+                        <div class="it">Anggaran</div>
+                    </div>
+                    <div class="pv-main">
+                        <div class="pv-kicker" style="color: #c05b9a">
+                            Ruang pernikahan
+                        </div>
+                        <div class="pv-title">Alya &amp; Bagas</div>
+                        <div class="pv-cards">
+                            <div
+                                class="pv-card"
+                                style="
+                                    background: #fff;
+                                    border: 1px solid #eed9ee;
+                                "
+                            >
+                                <div style="opacity: 0.6">Estimasi</div>
+                                <div class="pv-num">Rp 185 jt</div>
+                            </div>
+                            <div
+                                class="pv-card"
+                                style="
+                                    background: #fff;
+                                    border: 1px solid #eed9ee;
+                                "
+                            >
+                                <div style="opacity: 0.6">Dibayar</div>
+                                <div class="pv-num">Rp 62 jt</div>
+                            </div>
+                        </div>
+                        <span
+                            class="pv-btn"
+                            style="background: #c05b9a; color: #fff"
+                            >Tambah item</span
+                        >
+                        <span class="pv-btn o" style="color: #574061"
+                            >Lihat anggaran</span
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <h3>C — Blush Orchid</h3>
+            <p>
+                Romantis dengan sentuhan lilac-mauve. Primary orchid #c05b9a,
+                aksen lavender. Elegan, unik, masih hangat.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h3>Catatan</h3>
+    <ul>
+        <li>
+            Semua varian tetap memakai
+            <strong>aksen champagne lembut</strong> untuk ikon/stat card, dan
+            warna semantik (sukses/peringatan) tetap terpisah dari warna brand —
+            aturan CLAUDE.md tetap dipatuhi.
+        </li>
+        <li>
+            Dark mode tiap varian akan dibuat pasangan terangnya (mis. A → rose
+            terang).
+        </li>
+        <li>
+            Kalau tidak ada yang cocok, pilih "Other" dan ceritakan nuansa yang
+            kamu mau (mis. "pink lebih muda", "jangan ungu", "lebih krem").
+        </li>
+    </ul>
+</div>

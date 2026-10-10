@@ -1,0 +1,42 @@
+services:
+    app:
+        build: .
+        image: wedding-planner:latest
+        restart: unless-stopped
+        env_file:
+            - /etc/wedding-planner/app.env
+        environment:
+            RUN_MIGRATIONS: '${RUN_MIGRATIONS:-false}'
+        ports:
+            - '127.0.0.1:8080:8080'
+        depends_on:
+            database:
+                condition: service_healthy
+
+    database:
+        image: postgres:16-alpine
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: wedding_planner
+            POSTGRES_USER: wedding_planner
+            POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+        secrets:
+            - db_password
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'pg_isready -U wedding_planner -d wedding_planner',
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+secrets:
+    db_password:
+        file: /etc/wedding-planner/db_password.txt
+
+volumes:
+    pgdata:

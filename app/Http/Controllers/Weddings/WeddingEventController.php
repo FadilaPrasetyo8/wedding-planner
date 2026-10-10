@@ -24,7 +24,18 @@ class WeddingEventController extends Controller
                 ->orderBy('event_date')
                 ->orderBy('starts_at')
                 ->orderBy('id')
-                ->get(['uuid', 'name', 'type', 'event_date', 'starts_at', 'ends_at', 'venue', 'notes', 'is_primary']),
+                ->get(['uuid', 'name', 'type', 'event_date', 'starts_at', 'ends_at', 'venue', 'notes', 'is_primary'])
+                ->map(fn (WeddingEvent $event): array => [
+                    'uuid' => $event->uuid,
+                    'name' => $event->name,
+                    'type' => $event->type,
+                    'event_date' => $event->event_date->toDateString(),
+                    'starts_at' => $event->starts_at,
+                    'ends_at' => $event->ends_at,
+                    'venue' => $event->venue,
+                    'notes' => $event->notes,
+                    'is_primary' => $event->is_primary,
+                ]),
             'canEdit' => request()->user()->can('editOperationalData', $wedding),
         ]);
     }
@@ -49,14 +60,14 @@ class WeddingEventController extends Controller
         ]);
     }
 
-    public function create(Wedding $wedding): Response
+    public function create(Wedding $wedding): RedirectResponse
     {
         abort_unless(
             request()->user()->can('create', new WeddingEvent(['wedding_id' => $wedding->id])),
             403,
         );
 
-        return Inertia::render('weddings/events/create');
+        return redirect()->route('weddings.events.index', $wedding);
     }
 
     public function store(
@@ -66,27 +77,16 @@ class WeddingEventController extends Controller
     ): RedirectResponse {
         $events->create($wedding, $request->eventData());
 
-        return to_route('weddings.events.index', $wedding)
-            ->with('success', 'Acara berhasil ditambahkan.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Acara berhasil ditambahkan.')]);
+
+        return to_route('weddings.events.index', $wedding);
     }
 
-    public function edit(Wedding $wedding, WeddingEvent $event): Response
+    public function edit(Wedding $wedding, WeddingEvent $event): RedirectResponse
     {
         abort_unless(request()->user()->can('update', $event), 403);
 
-        return Inertia::render('weddings/events/edit', [
-            'event' => [
-                'uuid' => $event->uuid,
-                'name' => $event->name,
-                'type' => $event->type,
-                'eventDate' => $event->event_date->toDateString(),
-                'startsAt' => $event->starts_at,
-                'endsAt' => $event->ends_at,
-                'venue' => $event->venue,
-                'notes' => $event->notes,
-                'isPrimary' => $event->is_primary,
-            ],
-        ]);
+        return redirect()->route('weddings.events.index', $wedding);
     }
 
     public function update(
@@ -97,8 +97,9 @@ class WeddingEventController extends Controller
     ): RedirectResponse {
         $events->update($wedding, $event, $request->eventData());
 
-        return to_route('weddings.events.index', $wedding)
-            ->with('success', 'Acara berhasil diperbarui.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Acara berhasil diperbarui.')]);
+
+        return to_route('weddings.events.index', $wedding);
     }
 
     public function destroy(Wedding $wedding, WeddingEvent $event): RedirectResponse
@@ -113,7 +114,8 @@ class WeddingEventController extends Controller
 
         $event->delete();
 
-        return to_route('weddings.events.index', $wedding)
-            ->with('success', 'Acara berhasil dihapus.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Acara berhasil dihapus.')]);
+
+        return to_route('weddings.events.index', $wedding);
     }
 }

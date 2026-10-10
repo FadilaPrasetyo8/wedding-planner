@@ -55,7 +55,7 @@ class WorkspaceSchemaTest extends TestCase
 
         $this->assertGreaterThanOrEqual(2, Template::query()->count());
         $this->assertSame(
-            ['event', 'task'],
+            ['event', 'playlist_item', 'rundown_item', 'task'],
             Template::query()->with('sections.items')->get()
                 ->flatMap->sections
                 ->flatMap->items

@@ -32,6 +32,11 @@ class WeddingPolicy
         );
     }
 
+    public function export(User $user, Wedding $wedding): bool
+    {
+        return $this->editOperationalData($user, $wedding);
+    }
+
     private function activeMembershipRole(User $user, Wedding $wedding): ?WeddingMemberRole
     {
         return $wedding->memberships()

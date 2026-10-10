@@ -1,14 +1,22 @@
 import { Link, usePage } from '@inertiajs/react';
 import {
+    CalendarClock,
     CalendarDays,
     ClipboardList,
+    FileCheck,
+    Gift,
     HeartHandshake,
     Home,
+    ListPlus,
+    Music4,
     Settings,
+    Store,
     Users,
+    UsersRound,
+    Wallet,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
-import { NavMain } from '@/components/nav-main';
+import { NavMain, type NavGroup } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { WeddingSwitcher } from '@/components/wedding-switcher';
 import {
@@ -23,56 +31,142 @@ import {
 import { dashboard } from '@/routes';
 import { show } from '@/routes/weddings';
 import { index as eventsIndex } from '@/routes/weddings/events';
-import { index as membersIndex } from '@/routes/weddings/members';
+import { index as financeIndex } from '@/routes/weddings/finance';
+import { index as guestsIndex } from '@/routes/weddings/guests';
 import { index as planningIndex } from '@/routes/weddings/planning';
+import { index as vendorsIndex } from '@/routes/weddings/vendors';
+import { index as membersIndex } from '@/routes/weddings/members';
 import { edit as settingsEdit } from '@/routes/weddings/settings';
-import type { ActiveWedding, NavItem, WeddingCapabilities } from '@/types';
+import { index as checklistsIndex } from '@/routes/weddings/checklists';
+import { index as rundownIndex } from '@/routes/weddings/rundown';
+import { index as playlistIndex } from '@/routes/weddings/playlist';
+import { index as customFieldsIndex } from '@/routes/weddings/custom-fields';
+import type { ActiveWedding, WeddingCapabilities } from '@/types';
 
 export function AppSidebar() {
     const { activeWedding, capabilities } = usePage<{
         activeWedding: ActiveWedding | null;
         capabilities: WeddingCapabilities | null;
     }>().props;
-    const mainNavItems: NavItem[] = activeWedding
+    const navGroups: NavGroup[] = activeWedding
         ? [
               {
-                  title: 'Ringkasan',
-                  href: show(activeWedding.uuid),
-                  icon: Home,
+                  label: 'Utama',
+                  items: [
+                      {
+                          title: 'Ringkasan',
+                          href: show(activeWedding.uuid),
+                          icon: Home,
+                      },
+                      {
+                          title: 'Rencana tugas',
+                          href: planningIndex(activeWedding.uuid),
+                          icon: ClipboardList,
+                      },
+                      {
+                          title: 'Acara',
+                          href: eventsIndex(activeWedding.uuid),
+                          icon: CalendarDays,
+                      },
+                  ],
               },
               {
-                  title: 'Rencana tugas',
-                  href: planningIndex(activeWedding.uuid),
-                  icon: ClipboardList,
+                  label: 'Keuangan',
+                  items: [
+                      {
+                          title: 'Anggaran & pembayaran',
+                          href: financeIndex(activeWedding.uuid),
+                          icon: Wallet,
+                      },
+                  ],
               },
               {
-                  title: 'Acara',
-                  href: eventsIndex(activeWedding.uuid),
-                  icon: CalendarDays,
+                  label: 'Persiapan',
+                  items: [
+                      {
+                          title: 'Seserahan',
+                          href: checklistsIndex([
+                              activeWedding.uuid,
+                              'seserahan',
+                          ]),
+                          icon: Gift,
+                      },
+                      {
+                          title: 'Administrasi',
+                          href: checklistsIndex([
+                              activeWedding.uuid,
+                              'administration',
+                          ]),
+                          icon: FileCheck,
+                      },
+                      {
+                          title: 'Vendor',
+                          href: vendorsIndex(activeWedding.uuid),
+                          icon: Store,
+                      },
+                      {
+                          title: 'Tamu',
+                          href: guestsIndex(activeWedding.uuid),
+                          icon: UsersRound,
+                      },
+                  ],
               },
               {
-                  title: 'Anggota',
-                  href: membersIndex(activeWedding.uuid),
-                  icon: Users,
+                  label: 'Hari acara',
+                  items: [
+                      {
+                          title: 'Rundown',
+                          href: rundownIndex(activeWedding.uuid),
+                          icon: CalendarClock,
+                      },
+                      {
+                          title: 'Playlist',
+                          href: playlistIndex(activeWedding.uuid),
+                          icon: Music4,
+                      },
+                  ],
               },
-              ...(capabilities?.editWedding
-                  ? [
-                        {
-                            title: 'Pengaturan',
-                            href: settingsEdit(activeWedding.uuid),
-                            icon: Settings,
-                        },
-                    ]
-                  : []),
+              {
+                  label: 'Ruang kerja',
+                  items: [
+                      {
+                          title: 'Kustomisasi',
+                          href: customFieldsIndex(activeWedding.uuid),
+                          icon: ListPlus,
+                      },
+                      {
+                          title: 'Anggota',
+                          href: membersIndex(activeWedding.uuid),
+                          icon: Users,
+                      },
+                      ...(capabilities?.editWedding
+                          ? [
+                                {
+                                    title: 'Pengaturan',
+                                    href: settingsEdit(activeWedding.uuid),
+                                    icon: Settings,
+                                },
+                            ]
+                          : []),
+                  ],
+              },
           ]
         : [];
 
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <Sidebar
+            collapsible="icon"
+            variant="inset"
+            className="border-sidebar-border/80"
+        >
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
+                        <SidebarMenuButton
+                            size="lg"
+                            className="rounded-[var(--radius)]"
+                            asChild
+                        >
                             <Link href={dashboard()} prefetch>
                                 <AppLogo />
                             </Link>
@@ -85,7 +179,7 @@ export function AppSidebar() {
             </SidebarHeader>
             <SidebarContent>
                 {activeWedding ? (
-                    <NavMain items={mainNavItems} />
+                    <NavMain groups={navGroups} />
                 ) : (
                     <div className="text-muted-foreground mx-3 mt-4 rounded-2xl border border-dashed p-4 text-sm leading-6 group-data-[collapsible=icon]:hidden">
                         <HeartHandshake

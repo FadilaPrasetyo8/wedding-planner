@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Attachment Disk
+    |--------------------------------------------------------------------------
+    |
+    | Private attachment objects live on this disk: the S3-compatible Supabase
+    | bucket in deployed environments, or the private local disk in development
+    | and automated tests. The service credentials never leave the server.
+    |
+    */
+
+    'attachment_disk' => env('ATTACHMENT_DISK', 'local'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |
@@ -58,6 +71,17 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'report' => false,
+        ],
+
+        'supabase' => [
+            'driver' => 's3',
+            'key' => env('SUPABASE_STORAGE_KEY'),
+            'secret' => env('SUPABASE_STORAGE_SECRET'),
+            'region' => env('SUPABASE_STORAGE_REGION', 'ap-southeast-1'),
+            'bucket' => env('SUPABASE_STORAGE_BUCKET', 'wedding-planner-private'),
+            'endpoint' => rtrim((string) env('SUPABASE_URL', ''), '/').'/storage/v3/s3',
+            'use_path_style_endpoint' => true,
+            'throw' => true,
         ],
 
     ],

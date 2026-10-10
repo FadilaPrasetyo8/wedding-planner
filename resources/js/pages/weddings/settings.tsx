@@ -27,7 +27,7 @@ export default function Settings({ wedding }: { wedding: WeddingSettings }) {
                     <p className="text-primary text-sm font-semibold tracking-[0.14em] uppercase">
                         {activeWedding.name}
                     </p>
-                    <h1 className="mt-3 text-3xl font-semibold tracking-tight">
+                    <h1 className="font-display mt-3 text-3xl font-semibold tracking-tight">
                         Pengaturan ruang
                     </h1>
                     <p className="text-muted-foreground mt-3 leading-7">

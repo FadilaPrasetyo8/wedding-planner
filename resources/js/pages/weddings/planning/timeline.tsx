@@ -1,8 +1,15 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { AlertTriangle, CalendarDays, Pencil } from 'lucide-react';
+import { AlertTriangle, CalendarDays, Download, Pencil } from 'lucide-react';
 import TaskController from '@/actions/App/Http/Controllers/Weddings/TaskController';
 import { Button } from '@/components/ui/button';
-import PlanningFiltersForm, { queryString } from './planning-filters';
+import { exportUrl } from '@/lib/export-url';
+import { SectionTabs } from '@/components/section-tabs';
+import {
+    index as planningIndex,
+    timeline as planningTimeline,
+    configuration as planningConfiguration,
+} from '@/routes/weddings/planning';
+import PlanningFiltersForm from './planning-filters';
 import type { ActiveWedding } from '@/types';
 
 type TimelineTask = {
@@ -27,6 +34,7 @@ export default function Timeline({
     events,
     filters,
     canEdit,
+    canExport,
     categories,
     statuses,
     assignees,
@@ -35,13 +43,13 @@ export default function Timeline({
     events: EventMarker[];
     filters: Record<string, string | number | boolean>;
     canEdit: boolean;
+    canExport: boolean;
     categories: Option[];
     statuses: Option[];
     assignees: AssigneeOption[];
 }) {
     const { activeWedding } = usePage<{ activeWedding: ActiveWedding }>().props;
     const planningUrl = `/weddings/${activeWedding.uuid}/planning`;
-    const listQuery = queryString(filters);
     const allDates = [
         ...tasks.flatMap((task) => [task.startDate, task.dueDate]),
         ...events.map((event) => event.event_date),
@@ -74,7 +82,7 @@ export default function Timeline({
                             <p className="text-primary text-xs font-semibold tracking-[0.16em] uppercase">
                                 {activeWedding.name}
                             </p>
-                            <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+                            <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight">
                                 Linimasa perencanaan
                             </h1>
                             <p className="text-muted-foreground mt-2 text-sm">
@@ -82,14 +90,41 @@ export default function Timeline({
                                 satu tampilan.
                             </p>
                         </div>
-                        <Button variant="outline" asChild className="min-h-11">
-                            <Link
-                                href={`${planningUrl}${listQuery ? `?${listQuery}` : ''}`}
+                        {canExport && (
+                            <Button
+                                asChild
+                                variant="outline"
+                                className="min-h-11"
                             >
-                                Kembali ke daftar
-                            </Link>
-                        </Button>
+                                <a
+                                    href={exportUrl(
+                                        `/weddings/${activeWedding.uuid}/exports/planning`,
+                                        filters,
+                                    )}
+                                >
+                                    <Download aria-hidden="true" />
+                                    Ekspor CSV (Excel)
+                                </a>
+                            </Button>
+                        )}
                     </header>
+                    <SectionTabs
+                        ariaLabel="Navigasi rencana tugas"
+                        items={[
+                            {
+                                title: 'Daftar',
+                                href: planningIndex(activeWedding.uuid),
+                            },
+                            {
+                                title: 'Linimasa',
+                                href: planningTimeline(activeWedding.uuid),
+                            },
+                            {
+                                title: 'Konfigurasi',
+                                href: planningConfiguration(activeWedding.uuid),
+                            },
+                        ]}
+                    />
                     <PlanningFiltersForm
                         action={`${planningUrl}/timeline`}
                         filters={filters}

@@ -1,9 +1,12 @@
 import { Head, Link, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import { CalendarDays, Clock3, MapPin, Pencil, Plus } from 'lucide-react';
 import WeddingEventController from '@/actions/App/Http/Controllers/Weddings/WeddingEventController';
+import FormDialog from '@/components/form-dialog';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import type { ActiveWedding } from '@/types';
+import EventForm, { DeleteEventForm, type EventValue } from './event-form';
 
 type EventRow = {
     uuid: string;
@@ -17,6 +20,25 @@ type EventRow = {
     is_primary: boolean;
 };
 
+type ModalState =
+    | { mode: 'create' }
+    | { mode: 'edit'; event: EventValue }
+    | null;
+
+function toEventValue(row: EventRow): EventValue {
+    return {
+        uuid: row.uuid,
+        name: row.name,
+        type: row.type,
+        eventDate: row.event_date,
+        startsAt: row.starts_at,
+        endsAt: row.ends_at,
+        venue: row.venue,
+        notes: row.notes,
+        isPrimary: row.is_primary,
+    };
+}
+
 export default function EventIndex({
     events,
     canEdit,
@@ -24,7 +46,20 @@ export default function EventIndex({
     events: EventRow[];
     canEdit: boolean;
 }) {
-    const { activeWedding } = usePage<{ activeWedding: ActiveWedding }>().props;
+    const { activeWedding, errors } = usePage<{
+        activeWedding: ActiveWedding;
+        errors: { event?: string };
+    }>().props;
+    const [modal, setModal] = useState<ModalState>(() => {
+        const editUuid = new URLSearchParams(window.location.search).get(
+            'edit',
+        );
+        const target = events.find((event) => event.uuid === editUuid);
+
+        return canEdit && target
+            ? { mode: 'edit', event: toEventValue(target) }
+            : null;
+    });
 
     return (
         <>
@@ -36,7 +71,7 @@ export default function EventIndex({
                             <p className="text-primary text-xs font-semibold tracking-[0.16em] uppercase">
                                 {activeWedding.name}
                             </p>
-                            <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+                            <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight">
                                 Rangkaian acara
                             </h1>
                             <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">
@@ -45,14 +80,11 @@ export default function EventIndex({
                             </p>
                         </div>
                         {canEdit ? (
-                            <Button asChild className="min-h-11">
-                                <Link
-                                    href={WeddingEventController.create.url(
-                                        activeWedding.uuid,
-                                    )}
-                                >
-                                    <Plus aria-hidden="true" /> Tambah acara
-                                </Link>
+                            <Button
+                                className="min-h-11"
+                                onClick={() => setModal({ mode: 'create' })}
+                            >
+                                <Plus aria-hidden="true" /> Tambah acara
                             </Button>
                         ) : (
                             <p className="bg-muted rounded-full px-4 py-2 text-sm font-medium">
@@ -61,13 +93,7 @@ export default function EventIndex({
                         )}
                     </header>
 
-                    <InputError
-                        className="mt-5"
-                        message={
-                            usePage<{ errors: { event?: string } }>().props
-                                .errors?.event
-                        }
-                    />
+                    <InputError className="mt-5" message={errors.event} />
                     <div className="bg-card mt-6 divide-y overflow-hidden rounded-2xl border shadow-sm">
                         {events.map((event) => (
                             <article
@@ -134,19 +160,15 @@ export default function EventIndex({
                                 {canEdit && (
                                     <Button
                                         variant="outline"
-                                        asChild
                                         className="min-h-11"
+                                        onClick={() =>
+                                            setModal({
+                                                mode: 'edit',
+                                                event: toEventValue(event),
+                                            })
+                                        }
                                     >
-                                        <Link
-                                            href={WeddingEventController.edit.url(
-                                                [
-                                                    activeWedding.uuid,
-                                                    event.uuid,
-                                                ],
-                                            )}
-                                        >
-                                            <Pencil aria-hidden="true" /> Edit
-                                        </Link>
+                                        <Pencil aria-hidden="true" /> Edit
                                     </Button>
                                 )}
                             </article>
@@ -154,6 +176,44 @@ export default function EventIndex({
                     </div>
                 </div>
             </main>
+
+            <FormDialog
+                open={modal !== null}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setModal(null);
+                    }
+                }}
+                title={modal?.mode === 'edit' ? 'Edit acara' : 'Tambah acara'}
+                description={
+                    modal?.mode === 'edit'
+                        ? 'Perubahan acara utama dapat menggeser tugas relatif setelah dikonfirmasi.'
+                        : 'Catat satu rangkaian penting beserta waktu dan lokasinya.'
+                }
+            >
+                {modal && (
+                    <>
+                        <EventForm
+                            key={
+                                modal.mode === 'edit'
+                                    ? modal.event.uuid
+                                    : 'create'
+                            }
+                            event={
+                                modal.mode === 'edit' ? modal.event : undefined
+                            }
+                            onCancel={() => setModal(null)}
+                            onSuccess={() => setModal(null)}
+                        />
+                        {modal.mode === 'edit' && (
+                            <DeleteEventForm
+                                event={modal.event}
+                                onSuccess={() => setModal(null)}
+                            />
+                        )}
+                    </>
+                )}
+            </FormDialog>
         </>
     );
 }

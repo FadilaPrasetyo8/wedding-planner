@@ -26,7 +26,7 @@ export default function Dashboard() {
                         <p className="text-primary text-sm font-semibold tracking-[0.14em] uppercase">
                             Welcome
                         </p>
-                        <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+                        <h1 className="font-display mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
                             Your planning space is ready.
                         </h1>
                         <p className="text-muted-foreground mt-4 text-base leading-7">
@@ -37,7 +37,7 @@ export default function Dashboard() {
 
                     <div className="mt-10 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
                         <section
-                            className="bg-card rounded-2xl border p-6 shadow-sm sm:p-8"
+                            className="bg-card rounded-[var(--radius)] border p-6 shadow-[0_2px_0_rgb(23_21_18_/_0.08)] sm:p-8"
                             aria-labelledby="workspace-status-title"
                         >
                             <div
@@ -70,7 +70,7 @@ export default function Dashboard() {
                         </section>
 
                         <aside
-                            className="bg-card rounded-2xl border p-6 shadow-sm"
+                            className="bg-card rounded-[var(--radius)] border p-6 shadow-[0_2px_0_rgb(23_21_18_/_0.08)]"
                             aria-labelledby="readiness-title"
                         >
                             <h2 id="readiness-title" className="font-semibold">

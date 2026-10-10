@@ -27,3 +27,15 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Local tooling and session artifacts (not project source)
+/.claude/settings.local.json
+/.claude/worktrees/
+/.superpowers/
+/wedding-planner-m0/
+/docker/data/
+/deploy/**/*.env
+/deploy/**/*.key
+/deploy/**/db_password*
+*.pem
+*.key

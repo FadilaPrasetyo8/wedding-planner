@@ -1,4 +1,5 @@
-import { Form, Link, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import { Form, usePage } from '@inertiajs/react';
 import WeddingEventController from '@/actions/App/Http/Controllers/Weddings/WeddingEventController';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -19,14 +20,23 @@ export type EventValue = {
     isPrimary: boolean;
 };
 
-export default function EventForm({ event }: { event?: EventValue }) {
+export default function EventForm({
+    event,
+    onCancel,
+    onSuccess,
+}: {
+    event?: EventValue;
+    onCancel: () => void;
+    onSuccess: () => void;
+}) {
     const { activeWedding } = usePage<{ activeWedding: ActiveWedding }>().props;
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
     const form = event
         ? WeddingEventController.update.form([activeWedding.uuid, event.uuid])
         : WeddingEventController.store.form(activeWedding.uuid);
 
     return (
-        <Form {...form} className="space-y-6">
+        <Form {...form} onSuccess={onSuccess} className="space-y-6">
             {({ processing, errors }) => (
                 <>
                     <div className="grid gap-5 sm:grid-cols-2">
@@ -158,30 +168,53 @@ export default function EventForm({ event }: { event?: EventValue }) {
                     </div>
                     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
                         {event && !event.isPrimary ? (
-                            <Button
-                                type="submit"
-                                form="delete-event"
-                                variant="destructive"
-                                className="min-h-11"
-                            >
-                                Hapus acara
-                            </Button>
+                            confirmingDelete ? (
+                                <span
+                                    role="group"
+                                    aria-label="Konfirmasi hapus acara"
+                                    className="flex flex-wrap items-center gap-2"
+                                >
+                                    <Button
+                                        type="submit"
+                                        form="delete-event"
+                                        variant="destructive"
+                                        className="min-h-11"
+                                    >
+                                        Yakin, hapus
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="min-h-11"
+                                        onClick={() =>
+                                            setConfirmingDelete(false)
+                                        }
+                                    >
+                                        Batal
+                                    </Button>
+                                </span>
+                            ) : (
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    className="min-h-11"
+                                    onClick={() => setConfirmingDelete(true)}
+                                >
+                                    Hapus acara
+                                </Button>
+                            )
                         ) : (
                             <span />
                         )}
                         <div className="flex gap-3">
                             <Button
+                                type="button"
                                 variant="outline"
-                                asChild
                                 className="min-h-11"
+                                disabled={processing}
+                                onClick={onCancel}
                             >
-                                <Link
-                                    href={WeddingEventController.index.url(
-                                        activeWedding.uuid,
-                                    )}
-                                >
-                                    Batal
-                                </Link>
+                                Batal
                             </Button>
                             <Button disabled={processing} className="min-h-11">
                                 {processing ? 'Menyimpan…' : 'Simpan acara'}
@@ -194,11 +227,18 @@ export default function EventForm({ event }: { event?: EventValue }) {
     );
 }
 
-export function DeleteEventForm({ event }: { event: EventValue }) {
+export function DeleteEventForm({
+    event,
+    onSuccess,
+}: {
+    event: EventValue;
+    onSuccess: () => void;
+}) {
     const { activeWedding } = usePage<{ activeWedding: ActiveWedding }>().props;
     return (
         <Form
             id="delete-event"
+            onSuccess={onSuccess}
             {...WeddingEventController.destroy.form([
                 activeWedding.uuid,
                 event.uuid,

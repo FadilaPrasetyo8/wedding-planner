@@ -99,7 +99,7 @@ return new class extends Migration
         DB::statement("ALTER TABLE tasks ADD CONSTRAINT tasks_offsets_check CHECK ((date_mode = 'manual' AND relative_start_offset IS NULL AND relative_due_offset IS NULL) OR (date_mode = 'template_relative' AND relative_start_offset IS NOT NULL AND relative_due_offset IS NOT NULL))");
 
         DB::statement('ALTER TABLE template_items DROP CONSTRAINT template_items_type_check');
-        DB::statement("ALTER TABLE template_items ADD CONSTRAINT template_items_type_check CHECK (type IN ('event', 'task'))");
+        DB::statement("ALTER TABLE template_items ADD CONSTRAINT template_items_type_check CHECK (type IN ('event', 'task', 'rundown_item', 'playlist_item'))");
 
         $now = now();
         $categories = [
@@ -128,7 +128,7 @@ return new class extends Migration
     public function down(): void
     {
         DB::statement('ALTER TABLE template_items DROP CONSTRAINT template_items_type_check');
-        DB::statement("ALTER TABLE template_items ADD CONSTRAINT template_items_type_check CHECK (type IN ('event'))");
+        DB::statement("ALTER TABLE template_items ADD CONSTRAINT template_items_type_check CHECK (type IN ('event', 'task'))");
 
         Schema::dropIfExists('tasks');
         Schema::dropIfExists('task_statuses');

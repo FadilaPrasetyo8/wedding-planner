@@ -11,21 +11,21 @@ import { dashboard, home, login, register } from '@/routes';
 const foundations = [
     {
         icon: CalendarHeart,
-        title: 'One calm workspace',
+        title: 'Satu ruang tenang',
         description:
-            'Bring your plans, dates, and decisions into one trusted place.',
+            'Kumpulkan rencana, tanggal, dan keputusan dalam satu tempat terpercaya.',
     },
     {
         icon: WalletCards,
-        title: 'Clear financial planning',
+        title: 'Rencana keuangan yang jelas',
         description:
-            'Prepare for budgets and flexible payment schedules without spreadsheet sprawl.',
+            'Siapkan anggaran dan termin pembayaran yang luwes tanpa spreadsheet berantakan.',
     },
     {
         icon: CheckCircle2,
-        title: 'Progress you can trust',
+        title: 'Kemajuan yang bisa dipercaya',
         description:
-            'Keep important details visible while the celebration takes shape.',
+            'Detail penting tetap terlihat selagi hari bahagia dirangkai.',
     },
 ];
 
@@ -34,7 +34,7 @@ export default function Welcome() {
 
     return (
         <>
-            <Head title="Wedding planning, thoughtfully organized" />
+            <Head title="Rencana pernikahan yang tertata" />
 
             <div className="bg-background text-foreground min-h-svh">
                 <header className="border-border/70 bg-background/95 border-b">
@@ -44,7 +44,7 @@ export default function Welcome() {
                             className="focus-visible:ring-ring flex items-center gap-3 rounded-md focus-visible:ring-2 focus-visible:outline-none"
                         >
                             <span
-                                className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-full"
+                                className="bg-primary text-primary-foreground ring-primary/20 flex size-9 items-center justify-center rounded-[var(--radius)] ring-4"
                                 aria-hidden="true"
                             >
                                 <CalendarHeart className="size-4.5" />
@@ -55,24 +55,22 @@ export default function Welcome() {
                         </Link>
 
                         <nav
-                            aria-label="Account navigation"
+                            aria-label="Navigasi akun"
                             className="flex items-center gap-2"
                         >
                             {auth.user ? (
                                 <Button asChild>
                                     <Link href={dashboard()}>
-                                        Open workspace
+                                        Buka ruang kerja
                                     </Link>
                                 </Button>
                             ) : (
                                 <>
                                     <Button variant="ghost" asChild>
-                                        <Link href={login()}>Log in</Link>
+                                        <Link href={login()}>Masuk</Link>
                                     </Button>
                                     <Button asChild>
-                                        <Link href={register()}>
-                                            Create account
-                                        </Link>
+                                        <Link href={register()}>Buat akun</Link>
                                     </Button>
                                 </>
                             )}
@@ -86,15 +84,17 @@ export default function Welcome() {
                         <div className="mx-auto grid w-full max-w-6xl gap-14 px-6 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:px-8 lg:py-28">
                             <div className="max-w-2xl">
                                 <p className="text-primary mb-5 text-sm font-semibold tracking-[0.16em] uppercase">
-                                    Plan with clarity
+                                    Rencana dengan tenang
                                 </p>
-                                <h1 className="text-4xl leading-tight font-semibold tracking-[-0.035em] text-balance sm:text-5xl lg:text-6xl">
-                                    A thoughtful home for every wedding detail.
+                                <h1 className="font-display text-4xl leading-tight font-semibold tracking-[-0.03em] text-balance sm:text-5xl lg:text-6xl">
+                                    Rumah yang tertata untuk setiap detail
+                                    pernikahan Anda.
                                 </h1>
                                 <p className="text-muted-foreground mt-6 max-w-xl text-lg leading-8 text-pretty">
-                                    Organize the work behind your celebration in
-                                    a calm, secure workspace designed for real
-                                    planning sessions.
+                                    Susun pekerjaan di balik hari bahagia Anda
+                                    dalam ruang kerja yang tenang, aman, dan
+                                    dirancang untuk sesi perencanaan yang
+                                    sesungguhnya.
                                 </p>
                                 <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                                     <Button size="lg" asChild>
@@ -106,8 +106,8 @@ export default function Welcome() {
                                             }
                                         >
                                             {auth.user
-                                                ? 'Open workspace'
-                                                : 'Start planning'}
+                                                ? 'Buka ruang kerja'
+                                                : 'Mulai merencanakan'}
                                             <ArrowRight className="size-4" />
                                         </Link>
                                     </Button>
@@ -118,7 +118,7 @@ export default function Welcome() {
                                             asChild
                                         >
                                             <Link href={login()}>
-                                                I already have an account
+                                                Saya sudah punya akun
                                             </Link>
                                         </Button>
                                     )}
@@ -126,11 +126,11 @@ export default function Welcome() {
                             </div>
 
                             <aside
-                                className="border-border/80 bg-card rounded-3xl border p-7 shadow-sm sm:p-9"
-                                aria-label="Foundation status"
+                                className="border-border/80 bg-card rounded-[var(--radius)] border p-7 shadow-[0_2px_0_rgb(23_21_18_/_0.08)] sm:p-9"
+                                aria-label="Status fondasi"
                             >
                                 <p className="text-muted-foreground text-sm font-medium">
-                                    Your planning foundation
+                                    Fondasi perencanaan Anda
                                 </p>
                                 <div className="mt-8 space-y-7">
                                     {foundations.map(

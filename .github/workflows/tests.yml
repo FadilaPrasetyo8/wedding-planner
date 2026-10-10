@@ -34,5 +34,8 @@ jobs:
       - name: Setup Application
         run: composer setup
 
+      - name: Build Vite (Generate type definitions)
+        run: npm run build
+
       - name: Run CI Checks
         run: composer ci:check

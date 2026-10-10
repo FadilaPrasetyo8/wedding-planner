@@ -31,19 +31,23 @@ export default function TaskForm({
     statuses,
     assignees,
     events,
+    onCancel,
+    onSuccess,
 }: {
     task?: TaskValue;
     categories: Option[];
     statuses: Option[];
     assignees: Assignee[];
     events: Option[];
+    onCancel?: () => void;
+    onSuccess?: () => void;
 }) {
     const { activeWedding } = usePage<{ activeWedding: ActiveWedding }>().props;
     const form = task
         ? TaskController.update.form([activeWedding.uuid, task.uuid])
         : TaskController.store.form(activeWedding.uuid);
     return (
-        <Form {...form} className="space-y-6">
+        <Form {...form} onSuccess={onSuccess} className="space-y-6">
             {({ processing, errors }) => (
                 <>
                     <Field id="title" label="Judul tugas" error={errors.title}>
@@ -215,13 +219,29 @@ export default function TaskForm({
                         />
                     </Field>
                     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                        <Button variant="outline" asChild className="min-h-11">
-                            <Link
-                                href={`/weddings/${activeWedding.uuid}/planning`}
+                        {onCancel ? (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="min-h-11"
+                                disabled={processing}
+                                onClick={onCancel}
                             >
                                 Batal
-                            </Link>
-                        </Button>
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="outline"
+                                asChild
+                                className="min-h-11"
+                            >
+                                <Link
+                                    href={`/weddings/${activeWedding.uuid}/planning`}
+                                >
+                                    Batal
+                                </Link>
+                            </Button>
+                        )}
                         <Button disabled={processing} className="min-h-11">
                             {processing ? 'Menyimpan…' : 'Simpan tugas'}
                         </Button>
