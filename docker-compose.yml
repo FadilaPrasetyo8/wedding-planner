@@ -12,6 +12,11 @@ services:
         depends_on:
             database:
                 condition: service_healthy
+        networks:
+            default: {}
+            web:
+                aliases:
+                    - wedding-planner-app-1
 
     database:
         image: postgres:16-alpine
@@ -40,3 +45,8 @@ secrets:
 
 volumes:
     pgdata:
+
+networks:
+    web:
+        external: true
+        name: web
