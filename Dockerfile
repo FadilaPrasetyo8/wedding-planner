@@ -1,18 +1,23 @@
 # syntax=docker/dockerfile:1
 
-FROM node:22-alpine AS assets
-WORKDIR /build
-COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund
-COPY . .
-RUN npm run build
-
 FROM composer:2 AS vendor
 WORKDIR /build
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-interaction --no-scripts --no-progress --prefer-dist --optimize-autoloader
 COPY . .
 RUN composer dump-autoload --no-dev --optimize
+
+FROM php:8.3-cli-alpine AS assets
+RUN apk add --no-cache nodejs npm icu-libs libpq \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev postgresql-dev \
+    && docker-php-ext-install -j"$(nproc)" intl pdo_pgsql \
+    && apk del .build-deps
+WORKDIR /build
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY . .
+COPY --from=vendor /build/vendor ./vendor
+RUN npm run build
 
 FROM php:8.3-fpm-alpine AS runtime
 
